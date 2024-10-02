@@ -1,0 +1,51 @@
+//
+//  ViewController.swift
+//  RandomQouteApp
+//
+//  Created by karim hamed ashour on 7/23/24.
+//
+
+import UIKit
+
+class ViewController: UIViewController {
+    var currentQoute:QouteModel!
+    @IBOutlet weak var qouteLabel: UILabel!
+    @IBOutlet weak var quoteVCButton: UIButton!
+    var qoutes:[String]=["7amoksha","loksha","moksha","soksha"]
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+
+       
+    }
+    func getRandomQuote()async throws-> QouteModel{
+      let url = URL(string: "https://api.quotable.io/random")!
+        var request = URLRequest(url:url)
+        let (data, _) = try await URLSession.shared.data(for: request)
+        return try JSONDecoder().decode(QouteModel.self,from:data)
+    }
+    func storeQuote(_ quote:QouteModel){
+        currentQoute=quote
+    }
+    
+    func fetchAndStoreRandomQuote() async{
+        do{
+            let quote = try await getRandomQuote()
+            storeQuote(quote)
+            qouteLabel.text=currentQoute?.content
+        }catch{
+            print("Error fetching quote:\(error)")
+        }
+    }
+    @IBAction func qouteVCButtonAction(_ sender: Any) {
+        Task {
+            await fetchAndStoreRandomQuote()
+            
+            
+            
+            
+        }
+    }
+    
+}
+
