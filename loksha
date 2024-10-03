@@ -1,51 +1,22 @@
-//
-//  ViewController.swift
-//  RandomQouteApp
-//
-//  Created by karim hamed ashour on 7/23/24.
-//
+let headers = [
+	"x-rapidapi-key": "0759065158msh12c445f4ee9c220p1d8c00jsn06b05ab64730",
+	"x-rapidapi-host": "quotes15.p.rapidapi.com"
+]
 
-import UIKit
+let request = NSMutableURLRequest(url: NSURL(string: "https://quotes15.p.rapidapi.com/quotes/random/?language_code=en")! as URL,
+                                        cachePolicy: .useProtocolCachePolicy,
+                                    timeoutInterval: 10.0)
+request.httpMethod = "GET"
+request.allHTTPHeaderFields = headers
 
-class ViewController: UIViewController {
-    var currentQoute:QouteModel!
-    @IBOutlet weak var qouteLabel: UILabel!
-    @IBOutlet weak var quoteVCButton: UIButton!
-    var qoutes:[String]=["7amoksha","loksha","moksha","soksha"]
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
+let session = URLSession.shared
+let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
+	if (error != nil) {
+		print(error as Any)
+	} else {
+		let httpResponse = response as? HTTPURLResponse
+		print(httpResponse)
+	}
+})
 
-       
-    }
-    func getRandomQuote()async throws-> QouteModel{
-      let url = URL(string: "https://api.quotable.io/random")!
-        var request = URLRequest(url:url)
-        let (data, _) = try await URLSession.shared.data(for: request)
-        return try JSONDecoder().decode(QouteModel.self,from:data)
-    }
-    func storeQuote(_ quote:QouteModel){
-        currentQoute=quote
-    }
-    
-    func fetchAndStoreRandomQuote() async{
-        do{
-            let quote = try await getRandomQuote()
-            storeQuote(quote)
-            qouteLabel.text=currentQoute?.content
-        }catch{
-            print("Error fetching quote:\(error)")
-        }
-    }
-    @IBAction func qouteVCButtonAction(_ sender: Any) {
-        Task {
-            await fetchAndStoreRandomQuote()
-            
-            
-            
-            
-        }
-    }
-    
-}
-
+dataTask.resume()
