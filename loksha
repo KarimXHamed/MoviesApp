@@ -1,22 +1,17 @@
-let headers = [
-	"x-rapidapi-key": "0759065158msh12c445f4ee9c220p1d8c00jsn06b05ab64730",
-	"x-rapidapi-host": "quotes15.p.rapidapi.com"
-]
-
-let request = NSMutableURLRequest(url: NSURL(string: "https://quotes15.p.rapidapi.com/quotes/random/?language_code=en")! as URL,
-                                        cachePolicy: .useProtocolCachePolicy,
-                                    timeoutInterval: 10.0)
-request.httpMethod = "GET"
-request.allHTTPHeaderFields = headers
-
-let session = URLSession.shared
-let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
-	if (error != nil) {
-		print(error as Any)
-	} else {
-		let httpResponse = response as? HTTPURLResponse
-		print(httpResponse)
-	}
-})
-
-dataTask.resume()
+ let quote = currentQoute.randomElement()
+    UIView.animate(withDuration: 0.5, animations: {
+        self.qouteLabel.transform = CGAffineTransform(translationX: -self.view.bounds.width, y: 0)
+    }) { _ in
+        self.qouteLabel.text = ""
+        self.qouteLabel.transform = CGAffineTransform(translationX: self.view.bounds.width, y: 0)
+        UIView.animate(withDuration: 0.5) {
+            self.qouteLabel.transform = .identity
+        } completion: { _ in
+            self.typeWriterEffect(quote?.text ?? "", on: self.qouteLabel) {
+                self.qouteLabel.transform = .identity
+                UIView.animate(withDuration: 1.0, delay: 0, usingSpringWithDamping: 0.2, initialSpringVelocity: 10.0, options: .curveEaseInOut, animations: {
+                    self.qouteLabel.transform = CGAffineTransform(a: 0.8, b: 0, c: 0, d: 0.8, tx: 0, ty: 0)
+                }, completion: nil)
+            }
+        }
+    }
