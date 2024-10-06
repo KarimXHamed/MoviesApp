@@ -1,17 +1,18 @@
- let quote = currentQoute.randomElement()
-    UIView.animate(withDuration: 0.5, animations: {
-        self.qouteLabel.transform = CGAffineTransform(translationX: -self.view.bounds.width, y: 0)
-    }) { _ in
-        self.qouteLabel.text = ""
-        self.qouteLabel.transform = CGAffineTransform(translationX: self.view.bounds.width, y: 0)
-        UIView.animate(withDuration: 0.5) {
-            self.qouteLabel.transform = .identity
-        } completion: { _ in
-            self.typeWriterEffect(quote?.text ?? "", on: self.qouteLabel) {
+@IBAction func qouteVCButtonAction(_ sender: Any) {
+        if let quote = currentQoute.randomElement() {
+            typeWriterEffect(quote.text, on: qouteLabel) {
                 self.qouteLabel.transform = .identity
                 UIView.animate(withDuration: 1.0, delay: 0, usingSpringWithDamping: 0.2, initialSpringVelocity: 10.0, options: .curveEaseInOut, animations: {
                     self.qouteLabel.transform = CGAffineTransform(a: 0.8, b: 0, c: 0, d: 0.8, tx: 0, ty: 0)
                 }, completion: nil)
             }
+            typeWriterEffect("Said by: \(quote.from)", on: authorLabel) {
+                self.authorLabel.transform = .identity
+                UIView.animate(withDuration: 1.0, delay: 0, usingSpringWithDamping: 0.2, initialSpringVelocity: 10.0, options: .curveEaseInOut, animations: {
+                    self.authorLabel.transform = CGAffineTransform(a: 0.8, b: 0, c: 0, d: 0.8, tx: 0, ty: 0)
+                }, completion: nil)
+            }
         }
+        
+        
     }
