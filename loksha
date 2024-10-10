@@ -1,68 +1,35 @@
-//
-//  QuizViewController.swift
-//  flashCardApp
-//
-//  Created by karim hamed ashour on 10/8/24.
-//
-
 import UIKit
 
-class QuizViewController: UIViewController {
-    var flashCards=[
-        Quiz(question: "AAA", answer: "YYYY"),
-        Quiz(question: "BBB", answer: "YYYY"),
-        Quiz(question: "CCC", answer: "YYYY"),
-        Quiz(question: "DDD", answer: "YYYY"),
-        Quiz(question: "CCC", answer: "YYYY"),
-        Quiz(question: "CCC", answer: "YYYY"),
-        Quiz(question: "CCC", answer: "YYYY")
-    ]
-    let spacerView = UIView()
-    let scrollView = UIScrollView()
-    let stackView = UIStackView()
-    override func viewDidLoad() {
-            super.viewDidLoad()
-
-            
-            scrollView.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(scrollView)
-
-        scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        stackView.addArrangedSubview(spacerView)
-
-            stackView.axis = .vertical
-        stackView.distribution = .equalSpacing
-        stackView.spacing = 20
-            scrollView.addSubview(stackView)
-
-            stackView.translatesAutoresizingMaskIntoConstraints = false
-            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
-            stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
-            stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
-            stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
-        stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
-
-        scrollView.contentLayoutGuide.topAnchor.constraint(equalTo: stackView.topAnchor).isActive = true
-        scrollView.contentLayoutGuide.leadingAnchor.constraint(equalTo: stackView.leadingAnchor).isActive = true
-        scrollView.contentLayoutGuide.trailingAnchor.constraint(equalTo: stackView.trailingAnchor).isActive = true
-        scrollView.contentLayoutGuide.bottomAnchor.constraint(equalTo: stackView.bottomAnchor).isActive = true
-        
-            for flashcard in flashCards {
-                
-                let quiz = FlashCard()
-                quiz.flashCardLabel.text = flashcard.question
-                quiz.translatesAutoresizingMaskIntoConstraints = false
-                stackView.addArrangedSubview(quiz)
-                quiz.heightAnchor.constraint(equalToConstant: 100).isActive = true
-                spacer()
-              
-            }
-
-          
-        }
-
-
+class FlashCard: UIView {
+    
+    @IBOutlet weak var flashCardLabel: UILabel!
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.commonInit()
+     
     }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.commonInit()
+       
+    }
+
+    private func commonInit() {
+        let bundle = Bundle.main
+        if let viewToAdd = bundle.loadNibNamed("FlashCardView", owner: self, options: nil) {
+            for view in viewToAdd {
+                if let contentView = view as? UIView {
+
+                    addSubview(contentView)
+                    contentView.frame = self.bounds
+                    
+                    contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                    return
+                }
+            }
+        }
+    }
+   
+}
