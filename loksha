@@ -1,29 +1,68 @@
-@IBAction func qouteVCButtonAction(_ sender: Any) {
-    let quote = currentQoute.randomElement()
-    UIView.animate(withDuration: 0.5, animations: {
-        self.qouteLabel.transform = CGAffineTransform(translationX: -self.view.bounds.width, y: 0)
-        self.authorLabel.transform = CGAffineTransform(translationX: -self.view.bounds.width, y: 0)
-    }) { _ in
-        self.qouteLabel.text = ""
-        self.authorLabel.text = ""
-        self.qouteLabel.transform = CGAffineTransform(translationX: self.view.bounds.width, y: 0)
-        self.authorLabel.transform = CGAffineTransform(translationX: self.view.bounds.width, y: 0)
-        UIView.animate(withDuration: 0.5) {
-            self.qouteLabel.transform = .identity
-            self.authorLabel.transform = .identity
-        } completion: { _ in
-            self.typeWriterEffect(quote?.text ?? "", on: self.qouteLabel) {
-                self.qouteLabel.transform = .identity
-                UIView.animate(withDuration: 1.0, delay: 0, usingSpringWithDamping: 0.2, initialSpringVelocity: 10.0, options: .curveEaseInOut, animations: {
-                    self.qouteLabel.transform = CGAffineTransform(a: 0.8, b: 0, c: 0, d: 0.8, tx: 0, ty: 0)
-                }, completion: nil)
+//
+//  QuizViewController.swift
+//  flashCardApp
+//
+//  Created by karim hamed ashour on 10/8/24.
+//
+
+import UIKit
+
+class QuizViewController: UIViewController {
+    var flashCards=[
+        Quiz(question: "AAA", answer: "YYYY"),
+        Quiz(question: "BBB", answer: "YYYY"),
+        Quiz(question: "CCC", answer: "YYYY"),
+        Quiz(question: "DDD", answer: "YYYY"),
+        Quiz(question: "CCC", answer: "YYYY"),
+        Quiz(question: "CCC", answer: "YYYY"),
+        Quiz(question: "CCC", answer: "YYYY")
+    ]
+    let spacerView = UIView()
+    let scrollView = UIScrollView()
+    let stackView = UIStackView()
+    override func viewDidLoad() {
+            super.viewDidLoad()
+
+            
+            scrollView.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(scrollView)
+
+        scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        stackView.addArrangedSubview(spacerView)
+
+            stackView.axis = .vertical
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 20
+            scrollView.addSubview(stackView)
+
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+            stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
+            stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+            stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+        stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
+
+        scrollView.contentLayoutGuide.topAnchor.constraint(equalTo: stackView.topAnchor).isActive = true
+        scrollView.contentLayoutGuide.leadingAnchor.constraint(equalTo: stackView.leadingAnchor).isActive = true
+        scrollView.contentLayoutGuide.trailingAnchor.constraint(equalTo: stackView.trailingAnchor).isActive = true
+        scrollView.contentLayoutGuide.bottomAnchor.constraint(equalTo: stackView.bottomAnchor).isActive = true
+        
+            for flashcard in flashCards {
+                
+                let quiz = FlashCard()
+                quiz.flashCardLabel.text = flashcard.question
+                quiz.translatesAutoresizingMaskIntoConstraints = false
+                stackView.addArrangedSubview(quiz)
+                quiz.heightAnchor.constraint(equalToConstant: 100).isActive = true
+                spacer()
+              
             }
-            self.typeWriterEffect(quote?.author ?? "", on: self.authorLabel) {
-                self.authorLabel.transform = .identity
-                UIView.animate(withDuration: 1.0, delay: 0, usingSpringWithDamping: 0.2, initialSpringVelocity: 10.0, options: .curveEaseInOut, animations: {
-                    self.authorLabel.transform = CGAffineTransform(a: 0.8, b: 0, c: 0, d: 0.8, tx: 0, ty: 0)
-                }, completion: nil)
-            }
+
+          
         }
+
+
     }
-}
