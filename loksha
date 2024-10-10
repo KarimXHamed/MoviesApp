@@ -14,7 +14,7 @@ class FetchViewModel: NSObject {
     func fetchQuiz() -> [Quiz] {
         // Define the URL for the GitHub API
         for link in links{
-            let token = "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"
+            let token =
             let url = URL(string: link)!
             
             // Define the headers for the request
