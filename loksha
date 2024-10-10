@@ -1,4 +1,35 @@
+[]
+Error parsing JSON: keyNotFound(CodingKeys(stringValue: "results", intValue: nil), Swift.DecodingError.Context(codingPath: [], debugDescription: "No value associated with key CodingKeys(stringValue: \"results\", intValue: nil) (\"results\").", underlyingError: nil))
+Error parsing JSON: keyNotFound(CodingKeys(stringValue: "results", intValue: nil), Swift.DecodingError.Context(codingPath: [], debugDescription: "No value associated with key CodingKeys(stringValue: \"results\", intValue: nil) (\"results\").", underlyingError: nil))
+Error parsing JSON: keyNotFound(CodingKeys(stringValue: "results", intValue: nil), Swift.DecodingError.Context(codingPath: [], debugDescription: "No value associated with key CodingKeys(stringValue: \"results\", intValue: nil) (\"results\").", underlyingError: nil))
+Error parsing JSON: keyNotFound(CodingKeys(stringValue: "results", intValue: nil), Swift.DecodingError.Context(codingPath: [], debugDescription: "No value associated with key CodingKeys(stringValue: \"results\", intValue: nil) (\"results\").", underlyingError: nil))
+
+
 //
+//  ViewController.swift
+//  flashCardApp
+//
+//  Created by karim hamed ashour on 10/7/24.
+//
+
+import UIKit
+
+class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate{
+    
+    
+    
+    
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchBar: UINavigationItem!
+    let viewModel = FetchViewModel()
+    var flashCards:[Content]!
+    var quizes=[Quizes]()
+    var currentQuiz=[Quiz(question: "???", correct_answer: "???")]
+    var filteredTopics:[String]=[]
+    var score=0
+    var searching=false
+    
+   //
 //  FetchViewModel.swift
 //  flashCardApp
 //
@@ -8,13 +39,13 @@
 import UIKit
 
 class FetchViewModel: NSObject {
-    var quizes : Quizes?
+    var quizes = [Quizes]()
     var i = 0
     var links=["https://opentdb.com/api.php?amount=10&category=21","https://opentdb.com/api.php?amount=10&category=27","https://opentdb.com/api.php?amount=10&category=23","https://opentdb.com/api.php?amount=10&category=25","https://opentdb.com/api.php?amount=10&category=19","https://opentdb.com/api.php?amount=10&category=11"]
-    func fetchQuiz() -> [Quiz] {
+    func fetchQuiz() -> [Quizes] {
         // Define the URL for the GitHub API
         for link in links{
-            let token =
+            let token = 
             let url = URL(string: link)!
             
             // Define the headers for the request
@@ -38,8 +69,8 @@ class FetchViewModel: NSObject {
                 
                 // Parse the JSON data
                 do {
-                    let quizes = try JSONDecoder().decode(Quizes.self, from: data)
-                    self.quizes![1]
+                    let quiz = try JSONDecoder().decode(Quizes.self, from: data)
+                    self.quizes.append(quiz)
                     
                 } catch {
                     print("Error parsing JSON: \(error)")
@@ -53,3 +84,22 @@ class FetchViewModel: NSObject {
         return quizes
     }
 }
+
+    
+//
+//  Quiz.swift
+//  flashCardApp
+//
+//  Created by karim hamed ashour on 10/7/24.
+//
+
+import UIKit
+struct Quizes:Codable{
+    var results:[Quiz]
+}
+struct Quiz:Codable {
+var question:String
+var correct_answer:String
+}
+
+
