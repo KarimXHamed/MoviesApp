@@ -33,3 +33,5 @@ class FlashCard: UIView {
     }
    
 }
+
+Error parsing JSON: typeMismatch(Swift.Array<Any>, Swift.DecodingError.Context(codingPath: [], debugDescription: "Expected to decode Array<Any> but found a dictionary instead.", underlyingError: nil))
