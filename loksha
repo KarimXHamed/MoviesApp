@@ -1,37 +1,55 @@
+//
+//  FetchViewModel.swift
+//  flashCardApp
+//
+//  Created by karim hamed ashour on 10/10/24.
+//
+
 import UIKit
 
-class FlashCard: UIView {
-    
-    @IBOutlet weak var flashCardLabel: UILabel!
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.commonInit()
-     
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        self.commonInit()
-       
-    }
-
-    private func commonInit() {
-        let bundle = Bundle.main
-        if let viewToAdd = bundle.loadNibNamed("FlashCardView", owner: self, options: nil) {
-            for view in viewToAdd {
-                if let contentView = view as? UIView {
-
-                    addSubview(contentView)
-                    contentView.frame = self.bounds
-                    
-                    contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+class FetchViewModel: NSObject {
+    var quizes : Quizes?
+    var i = 0
+    var links=["https://opentdb.com/api.php?amount=10&category=21","https://opentdb.com/api.php?amount=10&category=27","https://opentdb.com/api.php?amount=10&category=23","https://opentdb.com/api.php?amount=10&category=25","https://opentdb.com/api.php?amount=10&category=19","https://opentdb.com/api.php?amount=10&category=11"]
+    func fetchQuiz() -> [Quiz] {
+        // Define the URL for the GitHub API
+        for link in links{
+            let token = "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"
+            let url = URL(string: link)!
+            
+            // Define the headers for the request
+            var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            
+            // Make the request
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                if let error = error {
+                    print("Error making request: \(error)")
                     return
                 }
+                
+                guard let data = data else {
+                    print("No data returned")
+                    return
+                }
+                
+                
+                
+                // Parse the JSON data
+                do {
+                    let quizes = try JSONDecoder().decode(Quizes.self, from: data)
+                    self.quizes![1]
+                    
+                } catch {
+                    print("Error parsing JSON: \(error)")
+                }
             }
+            
+            // Handle the response
+            task.resume()
         }
+        print("\(quizes)")
+        return quizes
     }
-   
 }
-
-Error parsing JSON: typeMismatch(Swift.Array<Any>, Swift.DecodingError.Context(codingPath: [], debugDescription: "Expected to decode Array<Any> but found a dictionary instead.", underlyingError: nil))
