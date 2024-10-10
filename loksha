@@ -1,51 +1,11 @@
-[]
-Error parsing JSON: keyNotFound(CodingKeys(stringValue: "results", intValue: nil), Swift.DecodingError.Context(codingPath: [], debugDescription: "No value associated with key CodingKeys(stringValue: \"results\", intValue: nil) (\"results\").", underlyingError: nil))
-Error parsing JSON: keyNotFound(CodingKeys(stringValue: "results", intValue: nil), Swift.DecodingError.Context(codingPath: [], debugDescription: "No value associated with key CodingKeys(stringValue: \"results\", intValue: nil) (\"results\").", underlyingError: nil))
-Error parsing JSON: keyNotFound(CodingKeys(stringValue: "results", intValue: nil), Swift.DecodingError.Context(codingPath: [], debugDescription: "No value associated with key CodingKeys(stringValue: \"results\", intValue: nil) (\"results\").", underlyingError: nil))
-Error parsing JSON: keyNotFound(CodingKeys(stringValue: "results", intValue: nil), Swift.DecodingError.Context(codingPath: [], debugDescription: "No value associated with key CodingKeys(stringValue: \"results\", intValue: nil) (\"results\").", underlyingError: nil))
-
-
-//
-//  ViewController.swift
-//  flashCardApp
-//
-//  Created by karim hamed ashour on 10/7/24.
-//
-
-import UIKit
-
-class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate{
+func fetchQuiz(completion: @escaping ([Quiz]?) -> Void) {
+    var retryCount = 0
+    let maxRetries = 5 // adjust this value to your liking
     
-    
-    
-    
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var searchBar: UINavigationItem!
-    let viewModel = FetchViewModel()
-    var flashCards:[Content]!
-    var quizes=[Quizes]()
-    var currentQuiz=[Quiz(question: "???", correct_answer: "???")]
-    var filteredTopics:[String]=[]
-    var score=0
-    var searching=false
-    
-   //
-//  FetchViewModel.swift
-//  flashCardApp
-//
-//  Created by karim hamed ashour on 10/10/24.
-//
-
-import UIKit
-
-class FetchViewModel: NSObject {
-    var quizes = [Quizes]()
-    var i = 0
-    var links=["https://opentdb.com/api.php?amount=10&category=21","https://opentdb.com/api.php?amount=10&category=27","https://opentdb.com/api.php?amount=10&category=23","https://opentdb.com/api.php?amount=10&category=25","https://opentdb.com/api.php?amount=10&category=19","https://opentdb.com/api.php?amount=10&category=11"]
-    func fetchQuiz() -> [Quizes] {
+    func attemptFetch() {
         // Define the URL for the GitHub API
-        for link in links{
-            let token = 
+        for link in links {
+            let token = "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"
             let url = URL(string: link)!
             
             // Define the headers for the request
@@ -57,49 +17,54 @@ class FetchViewModel: NSObject {
             let task = URLSession.shared.dataTask(with: request) { data, response, error in
                 if let error = error {
                     print("Error making request: \(error)")
+                    retryCount += 1
+                    if retryCount < maxRetries {
+                        attemptFetch()
+                    } else {
+                        completion(nil)
+                    }
                     return
                 }
                 
                 guard let data = data else {
                     print("No data returned")
+                    retryCount += 1
+                    if retryCount < maxRetries {
+                        attemptFetch()
+                    } else {
+                        completion(nil)
+                    }
                     return
                 }
                 
-                
-                
                 // Parse the JSON data
                 do {
-                    let quiz = try JSONDecoder().decode(Quizes.self, from: data)
-                    self.quizes.append(quiz)
-                    
+                    let quizes = try JSONDecoder().decode(Quizes.self, from: data)
+                    if quizes.results.isEmpty {
+                        retryCount += 1
+                        if retryCount < maxRetries {
+                            attemptFetch()
+                        } else {
+                            completion(nil)
+                        }
+                    } else {
+                        completion(quizes.results)
+                    }
                 } catch {
                     print("Error parsing JSON: \(error)")
+                    retryCount += 1
+                    if retryCount < maxRetries {
+                        attemptFetch()
+                    } else {
+                        completion(nil)
+                    }
                 }
             }
             
             // Handle the response
             task.resume()
         }
-        print("\(quizes)")
-        return quizes
     }
-}
-
     
-//
-//  Quiz.swift
-//  flashCardApp
-//
-//  Created by karim hamed ashour on 10/7/24.
-//
-
-import UIKit
-struct Quizes:Codable{
-    var results:[Quiz]
+    attemptFetch()
 }
-struct Quiz:Codable {
-var question:String
-var correct_answer:String
-}
-
-
