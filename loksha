@@ -1,21 +1,150 @@
-override func layoutSubviews() {
-    super.layoutSubviews()
-    for subview in subviews {
-        if let contentView = subview as? UIView {
-            contentView.frame = self.bounds
+import UIKit
+
+class FlashCard: UIView {
+    var isFlipped=false
+    var frontText="???"
+    var backText="???"
+    
+    @IBOutlet weak var flashCardLabel: UILabel!
+    
+    @IBOutlet weak var textLabel: UILabel!
+    @IBOutlet weak var submitButton: UIButton!
+    @IBOutlet weak var FlashCardTextField: UITextField!
+    var correctAnswer:String?
+    var delegate:QuizViewController?
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        for subview in subviews{
+            if let contentView = subview as? UIView{
+                contentView.frame = self.bounds
+            }
+        }
+    }
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        textLabel.text=frontText
+    }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.commonInit()
+        
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.commonInit()
+        
+    }
+ 
+    
+    private func commonInit() {
+        let bundle = Bundle.main
+        if let viewToAdd = bundle.loadNibNamed("FlashCardView", owner: self, options: nil) {
+            for view in viewToAdd {
+                if let contentView = view as? UIView {
+                    
+                    addSubview(contentView)
+                    
+                    
+                    contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                    contentView.layer.cornerRadius = 25
+                    contentView.layer.masksToBounds = true
+                    submitButton.addTarget(self, action: #selector(submitIsTapped), for: .touchUpInside)
+                        
+                    return
+                }
+            }
+        }
+    
+    }
+
+    @objc func submitIsTapped(_ sender:UIButton){
+        guard let userAnswer = FlashCardTextField.text, let correctAnswer = correctAnswer else {return}
+        if  userAnswer.lowercased() == correctAnswer.lowercased(){
+            UIView.transition(with: self, duration: 0.5, options: .transitionFlipFromRight){ self.flashCardLabel.backgroundColor = .green
+                self.FlashCardTextField.isHidden=true
+                self.submitButton.isHidden=true
+                self.delegate?.updateScore(by:10)
+            }
+        }else{
+            flashCardLabel.backgroundColor = .red
+            FlashCardTextField.isHidden=true
+            submitButton.isHidden=true
         }
     }
 }
+//
+//  QuizViewController.swift
+//  flashCardApp
+//
+//  Created by karim hamed ashour on 10/8/24.
+//
 
-private func commonInit() {
-    // ...
-    if let contentView = view as? UIView {
-        addSubview(contentView)
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        contentView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        contentView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        contentView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        // ...
+import UIKit
+
+class QuizViewController: UIViewController {
+    var flashCards=[Quiz]()
+        
+    @IBOutlet weak var scoreLabel: UILabel!
+    let scrollView = UIScrollView()
+    let stackView = UIStackView()
+    var score = 0
+    override func viewDidLoad() {
+            super.viewDidLoad()
+
+        scoreLabel.layer.cornerRadius = 25
+        scoreLabel.layer.masksToBounds = true
+        
+            scrollView.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(scrollView)
+
+        scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: 25).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+      
+    
+
+            stackView.axis = .vertical
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 50
+            scrollView.addSubview(stackView)
+
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+            stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
+            stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+            stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+        stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
+
+        scrollView.contentLayoutGuide.topAnchor.constraint(equalTo: stackView.topAnchor).isActive = true
+        scrollView.contentLayoutGuide.leadingAnchor.constraint(equalTo: stackView.leadingAnchor).isActive = true
+        scrollView.contentLayoutGuide.trailingAnchor.constraint(equalTo: stackView.trailingAnchor).isActive = true
+        scrollView.contentLayoutGuide.bottomAnchor.constraint(equalTo: stackView.bottomAnchor).isActive = true
+       
+        for flashcard in flashCards {
+            
+            let quiz = FlashCard()
+            quiz.textLabel.text=flashcard.question.text
+            quiz.frontText = flashcard.question.text
+            quiz.backText = flashcard.correctAnswer
+            quiz.translatesAutoresizingMaskIntoConstraints = false
+            stackView.addArrangedSubview(quiz)
+            
+            quiz.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            quiz.heightAnchor.constraint(equalToConstant: 250).isActive = true
+            quiz.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 70).isActive = true
+            quiz.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -70).isActive = true
+           
+         
+        }
+
+     
+        }
+    func updateScore(by points:Int){
+        score+=points
+        scoreLabel.text="score=\(score)/100"
     }
-}
+    
+
+    }
