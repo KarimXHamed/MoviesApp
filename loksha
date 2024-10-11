@@ -62,14 +62,18 @@ class FlashCard: UIView {
         guard let userAnswer = FlashCardTextField.text, let correctAnswer = correctAnswer else {return}
         if  userAnswer.lowercased() == correctAnswer.lowercased(){
             UIView.transition(with: self, duration: 0.5, options: .transitionFlipFromRight){ self.flashCardLabel.backgroundColor = .green
+                self.textLabel.text="Well Done!!"
                 self.FlashCardTextField.isHidden=true
                 self.submitButton.isHidden=true
                 self.delegate?.updateScore(by:10)
             }
         }else{
-            flashCardLabel.backgroundColor = .red
-            FlashCardTextField.isHidden=true
-            submitButton.isHidden=true
+            UIView.transition(with: self, duration: 0.5, options: .transitionFlipFromRight){
+                self.textLabel.text="Wrong!!"
+                self.flashCardLabel.backgroundColor = .red
+                self.FlashCardTextField.isHidden=true
+                self.submitButton.isHidden=true
+            }
         }
     }
 }
@@ -88,7 +92,10 @@ class QuizViewController: UIViewController {
     @IBOutlet weak var scoreLabel: UILabel!
     let scrollView = UIScrollView()
     let stackView = UIStackView()
-    var score = 0
+    var score:Int = 0 {
+        didSet{
+            scoreLabel.text="score=\(score)/100"}
+    }
     override func viewDidLoad() {
             super.viewDidLoad()
 
@@ -121,6 +128,7 @@ class QuizViewController: UIViewController {
         scrollView.contentLayoutGuide.leadingAnchor.constraint(equalTo: stackView.leadingAnchor).isActive = true
         scrollView.contentLayoutGuide.trailingAnchor.constraint(equalTo: stackView.trailingAnchor).isActive = true
         scrollView.contentLayoutGuide.bottomAnchor.constraint(equalTo: stackView.bottomAnchor).isActive = true
+        scoreLabel.text="score=\(score)/100"
        
         for flashcard in flashCards {
             
@@ -128,6 +136,7 @@ class QuizViewController: UIViewController {
             quiz.textLabel.text=flashcard.question.text
             quiz.frontText = flashcard.question.text
             quiz.backText = flashcard.correctAnswer
+            quiz.correctAnswer = flashcard.correctAnswer
             quiz.translatesAutoresizingMaskIntoConstraints = false
             stackView.addArrangedSubview(quiz)
             
