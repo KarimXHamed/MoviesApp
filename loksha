@@ -1,2 +1,143 @@
 []
-Error parsing JSON: dataCorrupted(Swift.DecodingError.Context(codingPath: [], debugDescription: "The given data was not valid JSON.", underlyingError: Optional(Error Domain=NSCocoaErrorDomain Code=3840 "Unexpected character ':' after top-level value around line 1, column 4." UserInfo={NSDebugDescription=Unexpected character ':' after top-level value around line 1, column 4., NSJSONSerializationErrorIndex=3})))
+[flashCardApp.Quizes(results: [flashCardApp.Quiz(question: "Formula E is an auto racing series that uses hybrid electric race cars.", correct_answer: "False"), flashCardApp.Quiz(question: "During Wimbledon, spectators in the grounds can buy the tennis balls that have been used in matches.", correct_answer: "True"), flashCardApp.Quiz(question: "Which nation hosted the FIFA World Cup in 2006?", correct_answer: "Germany"), flashCardApp.Quiz(question: "Skateboarding was included in the 2020 Summer Olympics in Tokyo.", correct_answer: "True"), flashCardApp.Quiz(question: "In Rugby League, performing a &quot;40-20&quot; is punished by a free kick for the opposing team.", correct_answer: "False"), flashCardApp.Quiz(question: "With which doubles partner did John McEnroe have most success?", correct_answer: "Peter Fleming"), flashCardApp.Quiz(question: "Which of the following player scored a hat-trick during their Manchester United debut?", correct_answer: "Wayne Rooney"), flashCardApp.Quiz(question: "What year was hockey legend Wayne Gretzky born?", correct_answer: "1961"), flashCardApp.Quiz(question: "Which year did Jenson Button won his first ever Formula One World Drivers&#039; Championship?", correct_answer: "2009"), flashCardApp.Quiz(question: "How many points did LeBron James score in his first NBA game?", correct_answer: "25")])]
+[flashCardApp.Quizes(results: [flashCardApp.Quiz(question: "Formula E is an auto racing series that uses hybrid electric race cars.", correct_answer: "False"), flashCardApp.Quiz(question: "During Wimbledon, spectators in the grounds can buy the tennis balls that have been used in matches.", correct_answer: "True"), flashCardApp.Quiz(question: "Which nation hosted the FIFA World Cup in 2006?", correct_answer: "Germany"), flashCardApp.Quiz(question: "Skateboarding was included in the 2020 Summer Olympics in Tokyo.", correct_answer: "True"), flashCardApp.Quiz(question: "In Rugby League, performing a &quot;40-20&quot; is punished by a free kick for the opposing team.", correct_answer: "False"), flashCardApp.Quiz(question: "With which doubles partner did John McEnroe have most success?", correct_answer: "Peter Fleming"), flashCardApp.Quiz(question: "Which of the following player scored a hat-trick during their Manchester United debut?", correct_answer: "Wayne Rooney"), flashCardApp.Quiz(question: "What year was hockey legend Wayne Gretzky born?", correct_answer: "1961"), flashCardApp.Quiz(question: "Which year did Jenson Button won his first ever Formula One World Drivers&#039; Championship?", correct_answer: "2009"), flashCardApp.Quiz(question: "How many points did LeBron James score in his first NBA game?", correct_answer: "25")]), flashCardApp.Quizes(results: [flashCardApp.Quiz(question: "After the 1516 Battle of Marj Dabiq, the Ottoman Empire took control of Jerusalem from which sultanate?", correct_answer: "Mamluk"), flashCardApp.Quiz(question: "The Panama Canal was finished under the administration of which U.S. president?", correct_answer: "Woodrow Wilson"), flashCardApp.Quiz(question: "Which of these positions did the astronomer and physicist Isaac Newton not hold?", correct_answer: "Surveyor to the City of London"), flashCardApp.Quiz(question: "Where and when was the first cardboard box made for industrial use?", correct_answer: "England, 1817"), flashCardApp.Quiz(question: "In which year did the First World War begin?", correct_answer: "1914"), flashCardApp.Quiz(question: "How old was Adolf Hitler when he died?", correct_answer: "56"), flashCardApp.Quiz(question: "In what dialogue did Socrates defend himself to the court of Athens? ", correct_answer: "The Apology"), flashCardApp.Quiz(question: "The United States Department of Homeland Security was formed in response to the September 11th attacks.", correct_answer: "True"), flashCardApp.Quiz(question: "The son of which pope supposedly held a lecherous f&ecirc;te involving 50 courtesans in the papal palace?", correct_answer: "Alexander VI"), flashCardApp.Quiz(question: "Which of these founding fathers of the United States of America later became president?", correct_answer: "James Monroe")])]
+[flashCardApp.Quizes(results: [flashCardApp.Quiz(question: "Formula E is an auto racing series that uses hybrid electric race cars.", correct_answer: "False"), flashCardApp.Quiz(question: "During Wimbledon, spectators in the grounds can buy the tennis balls that have been used in matches.", correct_answer: "True"), flashCardApp.Quiz(question: "Which nation hosted the FIFA World Cup in 2006?", correct_answer: "Germany"), flashCardApp.Quiz(question: "Skateboarding was included in the 2020 Summer Olympics in Tokyo.", correct_answer: "True"), flashCardApp.Quiz(question: "In Rugby League, performing a &quot;40-20&quot; is punished by a free kick for the opposing team.", correct_answer: "False"), flashCardApp.Quiz(question: "With which doubles partner did John McEnroe have most success?", correct_answer: "Peter Fleming"), flashCardApp.Quiz(question: "Which of the following player scored a hat-trick during their Manchester United debut?", correct_answer: "Wayne Rooney"), flashCardApp.Quiz(question: "What year was hockey legend Wayne Gretzky born?", correct_answer: "1961"), flashCardApp.Quiz(question: "Which year did Jenson Button won his first ever Formula One World Drivers&#039; Championship?", correct_answer: "2009"), flashCardApp.Quiz(question: "How many points did LeBron James score in his first NBA game?", correct_answer: "25")]), flashCardApp.Quizes(results: [flashCardApp.Quiz(question: "After the 1516 Battle of Marj Dabiq, the Ottoman Empire took control of Jerusalem from which sultanate?", correct_answer: "Mamluk"), flashCardApp.Quiz(question: "The Panama Canal was finished under the administration of which U.S. president?", correct_answer: "Woodrow Wilson"), flashCardApp.Quiz(question: "Which of these positions did the astronomer and physicist Isaac Newton not hold?", correct_answer: "Surveyor to the City of London"), flashCardApp.Quiz(question: "Where and when was the first cardboard box made for industrial use?", correct_answer: "England, 1817"), flashCardApp.Quiz(question: "In which year did the First World War begin?", correct_answer: "1914"), flashCardApp.Quiz(question: "How old was Adolf Hitler when he died?", correct_answer: "56"), flashCardApp.Quiz(question: "In what dialogue did Socrates defend himself to the court of Athens? ", correct_answer: "The Apology"), flashCardApp.Quiz(question: "The United States Department of Homeland Security was formed in response to the September 11th attacks.", correct_answer: "True"), flashCardApp.Quiz(question: "The son of which pope supposedly held a lecherous f&ecirc;te involving 50 courtesans in the papal palace?", correct_answer: "Alexander VI"), flashCardApp.Quiz(question: "Which of these founding fathers of the United States of America later became president?", correct_answer: "James Monroe")]), flashCardApp.Quizes(results: [flashCardApp.Quiz(question: "What is the first Mersenne prime exponent over 1000?", correct_answer: "1279"), flashCardApp.Quiz(question: "What shape does sin(x) or cos(x) make on a graph?", correct_answer: "Waves"), flashCardApp.Quiz(question: "What is the smallest number that can be expressed as the sum of two positive cubes in two different ways?", correct_answer: "1729"), flashCardApp.Quiz(question: "Which mathematician refused the Fields Medal?", correct_answer: "Grigori Perelman"), flashCardApp.Quiz(question: "The metric prefix &quot;atto-&quot; makes a measurement how much smaller than the base unit?", correct_answer: "One Quintillionth"), flashCardApp.Quiz(question: "The notion of a &quot;set that contains all sets which do not contain themselves&quot; is a paradoxical idea attributed to which English philospher?", correct_answer: "Bertrand Russel"), flashCardApp.Quiz(question: "In Roman Numerals, what does XL equate to?", correct_answer: "40"), flashCardApp.Quiz(question: "What is the fourth digit of &pi;?", correct_answer: "1"), flashCardApp.Quiz(question: "How many sides does a trapezium have?", correct_answer: "4"), flashCardApp.Quiz(question: "The decimal number 31 in hexadecimal would be what?", correct_answer: "1F")])]
+Error parsing JSON: keyNotFound(CodingKeys(stringValue: "results", intValue: nil), Swift.DecodingError.Context(codingPath: [], debugDescription: "No value associated with key CodingKeys(stringValue: \"results\", intValue: nil) (\"results\").", underlyingError: nil))
+Error parsing JSON: keyNotFound(CodingKeys(stringValue: "results", intValue: nil), Swift.DecodingError.Context(codingPath: [], debugDescription: "No value associated with key CodingKeys(stringValue: \"results\", intValue: nil) (\"results\").", underlyingError: nil))
+Error parsing JSON: keyNotFound(CodingKeys(stringValue: "results", intValue: nil), Swift.DecodingError.Context(codingPath: [], debugDescription: "No value associated with key CodingKeys(stringValue: \"results\", intValue: nil) (\"results\").", underlyingError: nil))
+
+//
+//  ViewController.swift
+//  flashCardApp
+//
+//  Created by karim hamed ashour on 10/7/24.
+//
+
+import UIKit
+
+class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate{
+    
+    
+    
+    
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchBar: UINavigationItem!
+    var flashCards:[Content]!
+    var quizes=[Quizes]()
+    var currentQuiz=[Quiz(question: "???", correct_answer: "???")]
+    var filteredTopics:[String]=[]
+    var score=0
+    var searching=false
+    var links=["https://opentdb.com/api.php?amount=10&category=21","https://opentdb.com/api.php?amount=10&category=27","https://opentdb.com/api.php?amount=10&category=23","https://opentdb.com/api.php?amount=10&category=25","https://opentdb.com/api.php?amount=10&category=19","https://opentdb.com/api.php?amount=10&category=11"]
+   
+    struct QouteModel: Codable {
+   
+        let text:String
+        let from:String
+    }
+
+    var topics:[String]=["Sports","Animals","History","Art","Math","Film"]
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        tableView.delegate=self
+        tableView.dataSource=self
+      fetchQuiz()
+        
+        
+    }
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+
+       
+        currentQuiz=quizes[indexPath.row].results
+        
+        let Vc = self.storyboard?.instantiateViewController(withIdentifier: "quizViewController") as! QuizViewController
+        Vc.flashCards=currentQuiz
+        self.navigationController?.pushViewController(Vc, animated: true)
+        
+    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        filteredTopics=topics.filter({$0.prefix(searchText.count)==searchText.lowercased()})
+        searching = true
+        tableView.reloadData()
+        
+    }
+    private func filterTopics(_ query:String){
+        
+        filteredTopics.removeAll()
+        for String in topics{
+            if String.lowercased().starts(with: query.lowercased()){
+                filteredTopics.append(String)
+            }
+        }
+        tableView.reloadData()
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if searching{
+            return filteredTopics.count
+        }else{
+            return topics.count
+        }
+    }
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+            if searching{
+                cell.textLabel?.text=filteredTopics[indexPath.row]
+            }else{
+                    cell.textLabel?.text=topics[indexPath.row]}
+            return cell
+        }
+    func fetchQuiz()  {
+        // Define the URL for the GitHub API
+        for link in links{
+            let token = "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"
+            let url = URL(string: link)!
+            
+            // Define the headers for the request
+            var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            
+            // Make the request
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                if let error = error {
+                    print("Error making request: \(error)")
+                    return
+                }
+                
+                guard let data = data else {
+                    print("No data returned")
+                    return
+                }
+                // Parse the JSON data
+                do {
+                    let quiz = try JSONDecoder().decode(Quizes.self, from: data)
+                    self.quizes.append(quiz)
+                    print(self.quizes)
+                    
+                } catch {
+                    print("Error parsing JSON: \(error)")
+                }
+            }
+            
+            // Handle the response
+            task.resume()
+        }
+        print(quizes)
+        
+    }
+}
+
+    
+ struct Quizes:Codable{
+    var results:[Quiz]
+}
+struct Quiz:Codable {
+var question:String
+var correct_answer:String
+}
+       
+    
+    
+
+
+
