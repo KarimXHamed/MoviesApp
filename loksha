@@ -1,93 +1,72 @@
-//
-//  ViewController.swift
-//  flashCardApp
-//
-//  Created by karim hamed ashour on 10/7/24.
-//
+Error: this application, or a library it uses, has passed an invalid numeric value (NaN, or not-a-number) to CoreGraphics API and this value is being ignored. Please fix this problem.
+If you want to see the backtrace, please set CG_NUMERICS_SHOW_BACKTRACE environmental variable.
+Can't move our portal view at the top.
 
 import UIKit
 
-class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate{
+class FlashCard: UIView {
+    var isFlipped=false
+    var frontText="???"
+    var backText="???"
     
+    @IBOutlet weak var flashCardLabel: UILabel!
     
-    
-    
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var searchBar: UINavigationItem!
-    let viewModel=FetchViewModel()
-    var flashCards:[Content]!
-    var quizes=[Quizes]()
-    var currentQuiz=[Quiz(question: "???", correct_answer: "???")]
-    var filteredTopics:[String]=[]
-    var score=0
-    var searching=false
-    var links=["https://opentdb.com/api.php?amount=10&category=21","https://opentdb.com/api.php?amount=10&category=27","https://opentdb.com/api.php?amount=10&category=23","https://opentdb.com/api.php?amount=10&category=25","https://opentdb.com/api.php?amount=10&category=19","https://opentdb.com/api.php?amount=10&category=11"]
-   
-    struct QouteModel: Codable {
-   
-        let text:String
-        let from:String
+    @IBOutlet weak var textLabel: UILabel!
+    @IBOutlet weak var submitButton: UIButton!
+    @IBOutlet weak var FlashCardTextField: UITextField!
+    var correctAnswer:String?
+    var delegate:QuizViewController?
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        textLabel.text=frontText
     }
-
-    var topics:[String]=["Sports","Animals","History","Art","Math","Film"]
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        tableView.delegate=self
-        tableView.dataSource=self
-        for link in links{
-            let currentLink=URL(string: link)
-            quizes=viewModel.fetchQuiz(url: currentLink!, token: "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")
-        }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.commonInit()
         
     }
-    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-
-       
-        currentQuiz=quizes[indexPath.row].results
-        print(currentQuiz)
-        
-        let Vc = self.storyboard?.instantiateViewController(withIdentifier: "quizViewController") as! QuizViewController
-        Vc.flashCards=currentQuiz
-        self.navigationController?.pushViewController(Vc, animated: true)
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.commonInit()
         
     }
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filteredTopics=topics.filter({$0.prefix(searchText.count)==searchText.lowercased()})
-        searching = true
-        tableView.reloadData()
-        
-    }
-    private func filterTopics(_ query:String){
-        
-        filteredTopics.removeAll()
-        for String in topics{
-            if String.lowercased().starts(with: query.lowercased()){
-                filteredTopics.append(String)
+ 
+    
+    private func commonInit() {
+        let bundle = Bundle.main
+        if let viewToAdd = bundle.loadNibNamed("FlashCardView", owner: self, options: nil) {
+            for view in viewToAdd {
+                if let contentView = view as? UIView {
+                    
+                    addSubview(contentView)
+                    contentView.frame = self.bounds
+                    
+                    contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                    contentView.layer.cornerRadius = 25
+                    contentView.layer.masksToBounds = true
+                    submitButton.addTarget(self, action: #selector(submitIsTapped), for: .touchUpInside)
+                        
+                    return
+                }
             }
         }
-        tableView.reloadData()
+    
     }
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searching{
-            return filteredTopics.count
+
+    @objc func submitIsTapped(_ sender:UIButton){
+        guard let userAnswer = FlashCardTextField.text, let correctAnswer = correctAnswer else {return}
+        if  userAnswer.lowercased() == correctAnswer.lowercased(){
+            UIView.transition(with: self, duration: 0.5, options: .transitionFlipFromRight){ self.flashCardLabel.backgroundColor = .green
+                self.FlashCardTextField.isHidden=true
+                self.submitButton.isHidden=true
+                self.delegate?.updateScore(by:10)
+            }
         }else{
-            return topics.count
+            flashCardLabel.backgroundColor = .red
+            FlashCardTextField.isHidden=true
+            submitButton.isHidden=true
         }
     }
-        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            if searching{
-                cell.textLabel?.text=filteredTopics[indexPath.row]
-            }else{
-                    cell.textLabel?.text=topics[indexPath.row]}
-            return cell
-        }
-    
-
 }
-
-    
-        
-    
-    
 
