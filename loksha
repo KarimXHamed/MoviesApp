@@ -1,46 +1,55 @@
-func fetchQuiz()  {
-    // Define the URL for the GitHub API
-    for link in links{
-        let token = "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"
-        let url = URL(string: link)!
+func fetchQuiz(url: URL, token: String, retryCount: Int = 0) {
+    // Define the headers for the request
+    var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy)
+    request.httpMethod = "GET"
+    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    
+    // Make the request
+    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        if let error = error {
+            print("Error making request: \(error)")
+            return
+        }
         
-        // Define the headers for the request
-        var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-        // Make the request
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error making request: \(error)")
-                return
-            }
-            
-            guard let data = data else {
-                print("No data returned")
-                return
-            }
-            // Parse the JSON data
-            do {
-                let json = try JSONSerialization.jsonObject(with: data, options: [])
-                if let json = json as? [String: Any] {
-                    if let results = json["results"] as? [[String: Any]] {
-                        let quiz = Quizes(results: results.map { Quiz(question: $0["question"] as? String ?? "", correct_answer: $0["correct_answer"] as? String ?? "") })
-                        self.quizes.append(quiz)
-                        print(self.quizes)
+        guard let data = data else {
+            print("No data returned")
+            return
+        }
+        // Parse the JSON data
+        do {
+            let json = try JSONSerialization.jsonObject(with: data, options: [])
+            if let json = json as? [String: Any] {
+                if let responseCode = json["response_code"] as? Int {
+                    if responseCode == 0 {
+                        if let results = json["results"] as? [[String: Any]] {
+                            let quiz = Quizes(responseCode: responseCode, results: results.map { Quiz(question: $0["question"] as? String ?? "", correct_answer: $0["correct_answer"] as? String ?? "") })
+                            self.quizes.append(quiz)
+                            print(self.quizes)
+                        } else {
+                            print("No results found in JSON response")
+                        }
+                    } else if responseCode == 5 {
+                        // Retry the request
+                        if retryCount < 3 { // max 3 retries
+                            print("Response code 5, retrying...")
+                            self.fetchQuiz(url: url, token: token, retryCount: retryCount + 1)
+                        } else {
+                            print("Max retries exceeded, giving up.")
+                        }
                     } else {
-                        print("No results found in JSON response")
+                        print("Unknown response code: \(responseCode)")
                     }
                 } else {
                     print("Invalid JSON response")
                 }
-            } catch {
-                print("Error parsing JSON: \(error)")
+            } else {
+                print("Invalid JSON response")
             }
+        } catch {
+            print("Error parsing JSON: \(error)")
         }
-        
-        // Handle the response
-        task.resume()
     }
-    print(quizes)
+    
+    // Handle the response
+    task.resume()
 }
