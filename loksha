@@ -1,55 +1,93 @@
-func fetchQuiz(url: URL, token: String, retryCount: Int = 0) {
-    // Define the headers for the request
-    var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy)
-    request.httpMethod = "GET"
-    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+//
+//  ViewController.swift
+//  flashCardApp
+//
+//  Created by karim hamed ashour on 10/7/24.
+//
+
+import UIKit
+
+class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate{
     
-    // Make the request
-    let task = URLSession.shared.dataTask(with: request) { data, response, error in
-        if let error = error {
-            print("Error making request: \(error)")
-            return
+    
+    
+    
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchBar: UINavigationItem!
+    let viewModel=FetchViewModel()
+    var flashCards:[Content]!
+    var quizes=[Quizes]()
+    var currentQuiz=[Quiz(question: "???", correct_answer: "???")]
+    var filteredTopics:[String]=[]
+    var score=0
+    var searching=false
+    var links=["https://opentdb.com/api.php?amount=10&category=21","https://opentdb.com/api.php?amount=10&category=27","https://opentdb.com/api.php?amount=10&category=23","https://opentdb.com/api.php?amount=10&category=25","https://opentdb.com/api.php?amount=10&category=19","https://opentdb.com/api.php?amount=10&category=11"]
+   
+    struct QouteModel: Codable {
+   
+        let text:String
+        let from:String
+    }
+
+    var topics:[String]=["Sports","Animals","History","Art","Math","Film"]
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        tableView.delegate=self
+        tableView.dataSource=self
+        for link in links{
+            let currentLink=URL(string: link)
+            quizes=viewModel.fetchQuiz(url: currentLink!, token: "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")
         }
         
-        guard let data = data else {
-            print("No data returned")
-            return
-        }
-        // Parse the JSON data
-        do {
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
-            if let json = json as? [String: Any] {
-                if let responseCode = json["response_code"] as? Int {
-                    if responseCode == 0 {
-                        if let results = json["results"] as? [[String: Any]] {
-                            let quiz = Quizes(responseCode: responseCode, results: results.map { Quiz(question: $0["question"] as? String ?? "", correct_answer: $0["correct_answer"] as? String ?? "") })
-                            self.quizes.append(quiz)
-                            print(self.quizes)
-                        } else {
-                            print("No results found in JSON response")
-                        }
-                    } else if responseCode == 5 {
-                        // Retry the request
-                        if retryCount < 3 { // max 3 retries
-                            print("Response code 5, retrying...")
-                            self.fetchQuiz(url: url, token: token, retryCount: retryCount + 1)
-                        } else {
-                            print("Max retries exceeded, giving up.")
-                        }
-                    } else {
-                        print("Unknown response code: \(responseCode)")
-                    }
-                } else {
-                    print("Invalid JSON response")
-                }
-            } else {
-                print("Invalid JSON response")
+    }
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+
+       
+        currentQuiz=quizes[indexPath.row].results
+        print(currentQuiz)
+        
+        let Vc = self.storyboard?.instantiateViewController(withIdentifier: "quizViewController") as! QuizViewController
+        Vc.flashCards=currentQuiz
+        self.navigationController?.pushViewController(Vc, animated: true)
+        
+    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        filteredTopics=topics.filter({$0.prefix(searchText.count)==searchText.lowercased()})
+        searching = true
+        tableView.reloadData()
+        
+    }
+    private func filterTopics(_ query:String){
+        
+        filteredTopics.removeAll()
+        for String in topics{
+            if String.lowercased().starts(with: query.lowercased()){
+                filteredTopics.append(String)
             }
-        } catch {
-            print("Error parsing JSON: \(error)")
+        }
+        tableView.reloadData()
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if searching{
+            return filteredTopics.count
+        }else{
+            return topics.count
         }
     }
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+            if searching{
+                cell.textLabel?.text=filteredTopics[indexPath.row]
+            }else{
+                    cell.textLabel?.text=topics[indexPath.row]}
+            return cell
+        }
     
-    // Handle the response
-    task.resume()
+
 }
+
+    
+        
+    
+    
+
