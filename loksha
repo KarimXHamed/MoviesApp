@@ -24,13 +24,14 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     var filteredCategories:[String]=[]
     var searching=false
     var links=["https://the-trivia-api.com/v2/questions?categories=sports&limit=10","https://the-trivia-api.com/v2/questions?categories=music&limit=10","https://the-trivia-api.com/v2/questions?categories=history&limit=10","https://the-trivia-api.com/v2/questions?categories=arts_and_literature&limit=10","https://the-trivia-api.com/v2/questions?categories=general_knowledge&limit=10","https://the-trivia-api.com/v2/questions?categories=film&limit=10"]
-    let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: ViewController.self, action: #selector(addButtonTapped))
+    var addButton:UIBarButtonItem!
+  
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate=self
         tableView.dataSource=self
         
-        
+         addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
         addButton.isEnabled=false
         activityIndicator.isHidden=false
         activityIndicator.startAnimating()
@@ -116,6 +117,7 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         return cell
     }
     @objc func addButtonTapped(){
+        print("tapped")
         let alertController = UIAlertController(title: "Name Quiz", message: nil, preferredStyle: .alert)
         alertController.addTextField{textField in
             textField.placeholder="Enter Quiz Name"
