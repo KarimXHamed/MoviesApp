@@ -18,33 +18,30 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     var flashCards:[Content]!
     var quizes=[[Quiz]]()
     var currentQuiz=[Quiz]()
-    var filteredTopics:[String]=[]
+    var categoriess:[String]=[]
+    var filteredCategories:[String]=[]
     var searching=false
     var links=["https://the-trivia-api.com/v2/questions?categories=sports&limit=10","https://the-trivia-api.com/v2/questions?categories=music&limit=10","https://the-trivia-api.com/v2/questions?categories=history&limit=10","https://the-trivia-api.com/v2/questions?categories=arts_and_literature&limit=10","https://the-trivia-api.com/v2/questions?categories=general_knowledge&limit=10","https://the-trivia-api.com/v2/questions?categories=film&limit=10"]
-   
-
-
-    var topics:[String]=["Sports","Animals","History","Art","Math","Film"]
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate=self
         tableView.dataSource=self
         for link in links{
+            var i = 0
             viewModel.fetchQuiz(link: link) {[weak self] quizes in
                 self?.quizes.append(quizes)
+                self?.categoriess.append(quizes[i].category)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
                     self?.tableView.reloadData()
                 } 
                 print(self?.quizes)
             }
-           
+           i+=1
         }
         
         print(quizes)
     }
-    func ahmedG(){
-        DispatchQueue.main.async{ self.tableView.reloadData()}
-    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
        
@@ -55,17 +52,24 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         
     }
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filteredTopics=topics.filter({$0.prefix(searchText.count)==searchText.lowercased()})
+        var i=0
+        var categories=[String]()
+        for category in quizes[i][0].category{
+            categories.append("\(category)")
+            i+=1
+        }
+        filteredCategories=categories.filter({$0.prefix(searchText.count)==searchText.lowercased()})
         searching = true
         tableView.reloadData()
         
     }
     private func filterTopics(_ query:String){
         
-        filteredTopics.removeAll()
-        for String in topics{
+        filteredCategories.removeAll()
+        
+        for String in categoriess{
             if String.lowercased().starts(with: query.lowercased()){
-                filteredTopics.append(String)
+                filteredCategories.append(String)
             }
         }
         tableView.reloadData()
@@ -74,9 +78,9 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         if quizes.isEmpty {return 0}
         else{
             if searching{
-                return filteredTopics.count
+                return filteredCategories.count
             }else{
-                return topics.count
+                return categoriess.count
             }
         }
     }
@@ -84,7 +88,7 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
         if searching{
-            cell.textLabel?.text=filteredTopics[indexPath.row]
+            cell.textLabel?.text=filteredCategories[indexPath.row]
         }else{
             let name = quizes[indexPath.row][0]
             cell.textLabel?.text=name.category.replacingOccurrences(of: "_", with: " ")
