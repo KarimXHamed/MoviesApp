@@ -25,6 +25,7 @@ class QuizViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
+       navigationItem.rightBarButtonItem = addButton
         
         scoreLabel.layer.cornerRadius = 25
         scoreLabel.layer.masksToBounds = true
@@ -101,7 +102,7 @@ class QuizViewController: UIViewController {
                 if let answerTextField = alertController.textFields?[1] , let text2 = answerTextField.text{
                     self?.currrentAnswer=text2
                 }
-                let newQuestion=Quiz(correctAnswer: self?.currrentAnswer! ?? "", question: Question(text: self?.currrentQuestion! ?? "", category: " ")
+                let newQuestion=Quiz(correctAnswer: self?.currrentAnswer! ?? "", question: Question(text: self?.currrentQuestion! ?? "") , category: "")
                                      
                 self?.viewController.quizes[self!.currentIndex].append(newQuestion)
             }
