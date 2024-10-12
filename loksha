@@ -8,12 +8,14 @@
 import UIKit
 
 class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate{
+   
     
     
     
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UINavigationItem!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     let viewModel=FetchViewModel()
     var flashCards:[Content]!
     var quizes=[[Quiz]]()
@@ -22,24 +24,40 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     var filteredCategories:[String]=[]
     var searching=false
     var links=["https://the-trivia-api.com/v2/questions?categories=sports&limit=10","https://the-trivia-api.com/v2/questions?categories=music&limit=10","https://the-trivia-api.com/v2/questions?categories=history&limit=10","https://the-trivia-api.com/v2/questions?categories=arts_and_literature&limit=10","https://the-trivia-api.com/v2/questions?categories=general_knowledge&limit=10","https://the-trivia-api.com/v2/questions?categories=film&limit=10"]
+    let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: ViewController.self, action: #selector(addButtonTapped))
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate=self
         tableView.dataSource=self
+        
+        
+        addButton.isEnabled=false
+        activityIndicator.isHidden=false
+        activityIndicator.startAnimating()
+        
         for link in links{
             var i = 0
             viewModel.fetchQuiz(link: link) {[weak self] quizes in
                 self?.quizes.append(quizes)
-                self?.categoriess.append(quizes[i].category)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
-                    self?.tableView.reloadData()
-                } 
+                self?.categoriess.append(quizes[0].category)
+                if self?.categoriess.count==self?.links.count{
+                    DispatchQueue.main.async{
+                        self?.activityIndicator.stopAnimating()
+                        self?.activityIndicator.isHidden=true
+                        self?.tableView.reloadData()
+                        self?.navigationItem.rightBarButtonItem=self?.addButton
+                        self?.addButton.isEnabled=true
+                    } }
                 print(self?.quizes)
             }
            i+=1
         }
         
         print(quizes)
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        searching=false
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -49,17 +67,18 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         let Vc = self.storyboard?.instantiateViewController(withIdentifier: "quizViewController") as! QuizViewController
         Vc.flashCards=currentQuiz
         self.navigationController?.pushViewController(Vc, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
         
     }
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        var i=0
-        var categories=[String]()
-        for category in quizes[i][0].category{
-            categories.append("\(category)")
-            i+=1
+        filteredCategories.removeAll()
+        if !searchText.isEmpty{
+            filteredCategories=categoriess.filter{$0.lowercased().contains(searchText.lowercased())}
+            searching = true
+        }else{
+            searching=false
         }
-        filteredCategories=categories.filter({$0.prefix(searchText.count)==searchText.lowercased()})
-        searching = true
+        
         tableView.reloadData()
         
     }
@@ -67,9 +86,9 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         
         filteredCategories.removeAll()
         
-        for String in categoriess{
-            if String.lowercased().starts(with: query.lowercased()){
-                filteredCategories.append(String)
+        for category in categoriess{
+            if category.lowercased().contains(query.lowercased()){
+                filteredCategories.append(category)
             }
         }
         tableView.reloadData()
@@ -88,14 +107,32 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
         if searching{
-            cell.textLabel?.text=filteredCategories[indexPath.row]
+            
+            cell.textLabel?.text=filteredCategories[indexPath.row].replacingOccurrences(of: "_", with: " ")
         }else{
             let name = quizes[indexPath.row][0]
             cell.textLabel?.text=name.category.replacingOccurrences(of: "_", with: " ")
         }
         return cell
     }
-    
+    @objc func addButtonTapped(){
+        let alertController = UIAlertController(title: "Name Quiz", message: nil, preferredStyle: .alert)
+        alertController.addTextField{textField in
+            textField.placeholder="Enter Quiz Name"
+            
+        }
+        let action = UIAlertAction(title: "Add", style: .default) {[weak self] _ in
+            if let textField = alertController.textFields?.first , let text = textField.text{
+                self?.categoriess.append(text)
+                self?.quizes.append([])
+                self?.tableView.reloadData()
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        alertController.addAction(action)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true)
+    }
 
 }
 
