@@ -160,3 +160,4 @@ class ViewController: UIViewController {
 
 Error parsing JSON: dataCorrupted(Swift.DecodingError.Context(codingPath: [], debugDescription: "The given data was not valid JSON.", underlyingError: Optional(Error Domain=NSCocoaErrorDomain Code=3840 "Unexpected character ':' after top-level value around line 1, column 4." UserInfo={NSDebugDescription=Unexpected character ':' after top-level value around line 1, column 4., NSJSONSerializationErrorIndex=3})))
 https://raw.githubusercontent.com/vinitshahdeo/inspirational-quotes/master/data/data.json
+Error parsing JSON: dataCorrupted(Swift.DecodingError.Context(codingPath: [], debugDescription: "The given data was not valid JSON.", underlyingError: Optional(Error Domain=NSCocoaErrorDomain Code=3840 "Unexpected character ':' after top-level value around line 1, column 4." UserInfo={NSJSONSerializationErrorIndex=3, NSDebugDescription=Unexpected character ':' after top-level value around line 1, column 4.})))
