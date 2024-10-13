@@ -1,1 +1,32 @@
-https://zenquotes.io/api/quotes
+//
+//  SelectLanguageCollectionViewController.swift
+//  languageLearningApp
+//
+//  Created by karim hamed ashour on 10/13/24.
+//
+
+import UIKit
+
+
+class SelectLanguageCollectionViewController: UICollectionViewController {
+    var languages = ["English","French","German","Italian","Spanish"]
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        // #warning Incomplete implementation, return the number of items
+        return languages.count
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? LangyageCellCollectionViewCell else{
+            fatalError("unable to deque cell")
+        }
+        
+        return cell
+    }
+}
+   
