@@ -1,33 +1,70 @@
 //
-//  SelectLanguageCollectionViewController.swift
-//  languageLearningApp
+//  ViewController.swift
+//  LAnguageLearningApp
 //
 //  Created by karim hamed ashour on 10/13/24.
 //
 
 import UIKit
+var languages=["English","Spanish","French","Chinese","German","Italian"]
+class ViewController: UICollectionViewController {
 
-private let reuseIdentifier = "Cell"
-class SelectLanguageCollectionViewController: UICollectionViewController {
-    var languages = ["English","French","German","Italian","Spanish"]
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-    
+        // Do any additional setup after loading the view.
     }
-    
+
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-       
         return languages.count
     }
-    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? LangyageCellCollectionViewCell else{
-            fatalError("unable to deque cell")
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Language", for: indexPath) as? LanguageCell else {
+            fatalError("unable to deque language cell")
         }
-//        cell.cellLabel.text=languages[indexPath.item]
+        cell.languageCell.text=languages[indexPath.item]
+        cell.layer.cornerRadius=10
         return cell
+    }
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let language = languages[indexPath.row]
+        let vc = self.storyboard?.instantiateViewController(withIdentifier: "LevelsTableViewController") as! LevelsTableViewController
+        vc.currentLanguage=language
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+
+
+
+//
+//  LevelContentViewController.swift
+//  LAnguageLearningApp
+//
+//  Created by karim hamed ashour on 10/14/24.
+//
+
+import UIKit
+
+class LevelContentViewController: UICollectionViewController {
+var content=["Conversation","Lestining","Reading","Writing","Vocabulary"]
+    var currentLevel:String?
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.title=currentLevel
+    }
+
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return content.count
+    }
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Language", for: indexPath) as? LanguageCell else {
+            fatalError("unable to deque language cell")
+        }
+        cell.languageCell.text=content[indexPath.item]
+        cell.layer.cornerRadius=10
+        return cell
+    }
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+       
     }
 }
