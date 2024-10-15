@@ -1,70 +1,232 @@
 //
-//  ViewController.swift
-//  LAnguageLearningApp
+//  QuizViewController.swift
+//  flashCardApp
 //
-//  Created by karim hamed ashour on 10/13/24.
+//  Created by karim hamed ashour on 10/8/24.
 //
 
 import UIKit
-var languages=["English","Spanish","French","Chinese","German","Italian"]
-class ViewController: UICollectionViewController {
 
+class QuizViewController: UIViewController {
+    var flashCards=[Quiz]()
+    var addButton:UIBarButtonItem!
+    @IBOutlet weak var scoreLabel: UILabel!
+    let scrollView = UIScrollView()
+    let stackView = UIStackView()
+    var viewController:ViewController?
+    var currentIndex=0
+    var currrentQuestion:String?
+    var currrentAnswer:String?
+    var maxScore:Int?
+    var score = 0 {
+        didSet{
+            
+            self.scoreLabel.text="score=\(self.score)/\(self.maxScore!*10)"}
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
+       navigationItem.rightBarButtonItem = addButton
+        
+        scoreLabel.layer.cornerRadius = 25
+        scoreLabel.layer.masksToBounds = true
+        scoreLabel.text="score=\(score)/\(self.score*10)"
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        
+        scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: 25).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        
+        
+        stackView.axis = .vertical
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 50
+        scrollView.addSubview(stackView)
+        
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+        stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
+        stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+        stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
+        
+        scrollView.contentLayoutGuide.topAnchor.constraint(equalTo: stackView.topAnchor).isActive = true
+        scrollView.contentLayoutGuide.leadingAnchor.constraint(equalTo: stackView.leadingAnchor).isActive = true
+        scrollView.contentLayoutGuide.trailingAnchor.constraint(equalTo: stackView.trailingAnchor).isActive = true
+        scrollView.contentLayoutGuide.bottomAnchor.constraint(equalTo: stackView.bottomAnchor).isActive = true
+        setUpUI()
+        
+        
+      
+        
+        
     }
-
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return languages.count
-    }
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Language", for: indexPath) as? LanguageCell else {
-            fatalError("unable to deque language cell")
+    func setUpUI(){
+        for flashcard in flashCards {
+            
+            let quiz = FlashCard()
+            quiz.delegate=self
+            quiz.textLabel.text=flashcard.question.text
+            quiz.frontText = flashcard.question.text
+            quiz.backText = flashcard.correctAnswer
+            quiz.correctAnswer = flashcard.correctAnswer
+            quiz.translatesAutoresizingMaskIntoConstraints = false
+            stackView.addArrangedSubview(quiz)
+            
+            quiz.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            quiz.heightAnchor.constraint(equalToConstant: 250).isActive = true
+            quiz.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 70).isActive = true
+            quiz.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -70).isActive = true
+            
+            
         }
-        cell.languageCell.text=languages[indexPath.item]
-        cell.layer.cornerRadius=10
-        return cell
+        maxScore=flashCards.count
+      scoreLabel.text="score=\(self.score)/\(self.maxScore!*10)"
     }
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let language = languages[indexPath.row]
-        let vc = self.storyboard?.instantiateViewController(withIdentifier: "LevelsTableViewController") as! LevelsTableViewController
-        vc.currentLanguage=language
-        self.navigationController?.pushViewController(vc, animated: true)
-    }
+    func updateUI(newFlashCard:Quiz){
+        let quiz = FlashCard()
+        quiz.delegate=self
+        quiz.textLabel.text=newFlashCard.question.text
+        quiz.frontText = newFlashCard.question.text
+        quiz.backText = newFlashCard.correctAnswer
+        quiz.correctAnswer = newFlashCard.correctAnswer
+        quiz.translatesAutoresizingMaskIntoConstraints = false
+        stackView.addArrangedSubview(quiz)
+        
+        quiz.widthAnchor.constraint(equalToConstant: 250).isActive = true
+        quiz.heightAnchor.constraint(equalToConstant: 250).isActive = true
+        quiz.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 70).isActive = true
+        quiz.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -70).isActive = true
+        
+        
+    
+    maxScore=flashCards.count
+  scoreLabel.text="score=\(self.score)/\(self.maxScore!*10)"
 }
 
 
-
-
-//
-//  LevelContentViewController.swift
-//  LAnguageLearningApp
-//
-//  Created by karim hamed ashour on 10/14/24.
-//
-
-import UIKit
-
-class LevelContentViewController: UICollectionViewController {
-var content=["Conversation","Lestining","Reading","Writing","Vocabulary"]
-    var currentLevel:String?
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.title=currentLevel
+    
+    func updateScore(by points:Int){
+        score+=points
+        
     }
-
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return content.count
-    }
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Language", for: indexPath) as? LanguageCell else {
-            fatalError("unable to deque language cell")
-        }
-        cell.languageCell.text=content[indexPath.item]
-        cell.layer.cornerRadius=10
-        return cell
-    }
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    @objc func addButtonTapped(){
        
+
+            let alertController = UIAlertController(title: "Enter Question/Answer", message: nil, preferredStyle: .alert)
+            alertController.addTextField{textField in
+                textField.placeholder="Enter Question"
+                
+            }
+        alertController.addTextField{textField in
+            textField.placeholder="Enter Answer"
+            
+        }
+            let action = UIAlertAction(title: "Add", style: .default) {[weak self] _ in
+                if let questionTextField = alertController.textFields?.first , let text1 = questionTextField.text{
+                    self?.currrentQuestion=text1
+                }
+                if let answerTextField = alertController.textFields?[1] , let text2 = answerTextField.text{
+                    self?.currrentAnswer=text2
+                }
+                let newQuestion=Quiz(correctAnswer: self?.currrentAnswer! ?? "", question: Question(text: self?.currrentQuestion! ?? "") , category: "")
+                                     
+                self?.viewController?.quizes[self!.currentIndex].append(newQuestion)
+                self?.flashCards.append(newQuestion)
+                self?.updateUI(newFlashCard: newQuestion)
+            }
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+            alertController.addAction(action)
+            alertController.addAction(cancelAction)
+            present(alertController, animated: true)
+        }
+
+    }
+
+import UIKit
+
+class FlashCard: UIView {
+    var isFlipped=false
+    var frontText="???"
+    var backText="???"
+    
+    @IBOutlet weak var flashCardLabel: UILabel!
+    
+    @IBOutlet weak var textLabel: UILabel!
+    
+    @IBOutlet weak var submitButton: UIButton!
+    @IBOutlet weak var FlashCardTextField: UITextField!
+    var correctAnswer:String?
+    var delegate:QuizViewController!
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        for subview in subviews{
+            if let contentView = subview as? UIView{
+                contentView.frame = self.bounds
+            }
+        }
+    }
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        textLabel.text=frontText
+    }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.commonInit()
+        
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.commonInit()
+        
+    }
+ 
+    
+    private func commonInit() {
+        let bundle = Bundle.main
+        if let viewToAdd = bundle.loadNibNamed("FlashCardView", owner: self, options: nil) {
+            for view in viewToAdd {
+                if let contentView = view as? UIView {
+                    
+                    addSubview(contentView)
+                    
+                    
+                    contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                    contentView.layer.cornerRadius = 25
+                    contentView.layer.masksToBounds = true
+                    submitButton.addTarget(self, action: #selector(submitIsTapped), for: .touchUpInside)
+                        
+                    return
+                }
+            }
+        }
+    
+    }
+
+    @objc func submitIsTapped(_ sender:UIButton){
+        guard let userAnswer = FlashCardTextField.text, let correctAnswer = correctAnswer else {return}
+        if  userAnswer.lowercased() == correctAnswer.lowercased(){
+            UIView.transition(with: self, duration: 0.5, options: .transitionFlipFromRight){ self.flashCardLabel.backgroundColor = .green
+                self.textLabel.text="Well Done!!"
+                self.FlashCardTextField.isHidden=true
+                self.submitButton.isHidden=true
+                self.delegate.updateScore(by: 10)
+                
+            }
+        }else{
+            UIView.transition(with: self, duration: 0.5, options: .transitionFlipFromRight){
+                self.textLabel.text="Wrong!!"
+                self.flashCardLabel.backgroundColor = .red
+                self.FlashCardTextField.isHidden=true
+                self.submitButton.isHidden=true
+            }
+        }
     }
 }
+
+
