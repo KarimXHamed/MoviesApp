@@ -1,9 +1,68 @@
+//
+//  MyContentViewController.swift
+//  teacherify
+//
+//  Created by karim hamed ashour on 10/21/24.
+//
+
+import UIKit
+
+class MyContentViewController: UIViewController {
+    var currentLesson:lesson?
+    var flashcards:[quiz]?
+    var lesson:String?
+    let scrollView = UIScrollView()
+    let stackView = UIStackView()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        self.title=currentLesson?.name
+        flashcards=currentLesson?.quizes
+        lesson=currentLesson!.text
+        print("\(lesson!)")
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        
+        scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: 25).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        
+        
+        stackView.axis = .vertical
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 50
+        scrollView.addSubview(stackView)
+        
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+        stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
+        stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+        stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
+        
+        scrollView.contentLayoutGuide.topAnchor.constraint(equalTo: stackView.topAnchor).isActive = true
+        scrollView.contentLayoutGuide.leadingAnchor.constraint(equalTo: stackView.leadingAnchor).isActive = true
+        scrollView.contentLayoutGuide.trailingAnchor.constraint(equalTo: stackView.trailingAnchor).isActive = true
+        scrollView.contentLayoutGuide.bottomAnchor.constraint(equalTo: stackView.bottomAnchor).isActive = true
+        setUpUI()
+        
+        
+      
+        
+        
+    }
     func setUpUI(){
        let myLesson=LessonView()
         myLesson.frontText="???"
         myLesson.backText=lesson!
         myLesson.translatesAutoresizingMaskIntoConstraints = false
         stackView.addArrangedSubview(myLesson)
+        myLesson.widthAnchor.constraint(equalToConstant: 250).isActive = true
+        myLesson.heightAnchor.constraint(equalToConstant: 250).isActive = true
+        myLesson.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 70).isActive = true
+        myLesson.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -70).isActive = true
         for flashcard in flashcards! {
             var i=0
             let quiz = FlashcardView()
@@ -22,3 +81,112 @@
             i+=1
             
         }
+    
+    }
+//    func updateUI(newFlashCard:Quiz){
+//        let quiz = FlashCard()
+//        quiz.delegate=self
+//        quiz.textLabel.text=newFlashCard.question.text
+//        quiz.frontText = newFlashCard.question.text
+//        quiz.backText = newFlashCard.correctAnswer
+//        quiz.correctAnswer = newFlashCard.correctAnswer
+//        quiz.translatesAutoresizingMaskIntoConstraints = false
+//        stackView.addArrangedSubview(quiz)
+//        
+//        quiz.widthAnchor.constraint(equalToConstant: 250).isActive = true
+//        quiz.heightAnchor.constraint(equalToConstant: 250).isActive = true
+//        quiz.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 70).isActive = true
+//        quiz.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -70).isActive = true
+//
+//    }
+    
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
+}
+//
+//  LessonView.swift
+//  teacherify
+//
+//  Created by karim hamed ashour on 10/21/24.
+//
+
+import UIKit
+
+class LessonView: UIView {
+    @IBOutlet weak var lessonText: UILabel!
+            var isFlipped=false
+            var frontText="???"
+            var backText="???"
+            
+
+            
+
+        @IBOutlet weak var flashcardLabel: UILabel!
+        var correctAnswer:String?
+            var delegate:MyContentViewController!
+            override func layoutSubviews() {
+                super.layoutSubviews()
+                for subview in subviews{
+                    if let contentView = subview as? UIView{
+                        contentView.frame = self.bounds
+                    }
+                }
+            }
+            
+                override func awakeFromNib() {
+                    super.awakeFromNib()
+                    lessonText.text=frontText
+                    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+                            self.addGestureRecognizer(tapGesture)
+                            self.isUserInteractionEnabled = true
+                }
+                override init(frame: CGRect) {
+                    super.init(frame: frame)
+                    self.commonInit()
+                    
+                }
+                
+                required init?(coder: NSCoder) {
+                    super.init(coder: coder)
+                    self.commonInit()
+                    
+                }
+             
+                
+                private func commonInit() {
+                    let bundle = Bundle.main
+                    if let viewToAdd = bundle.loadNibNamed("Lesson", owner: self, options: nil) {
+                        for view in viewToAdd {
+                            if let contentView = view as? UIView {
+                                
+                                addSubview(contentView)
+                                
+                                
+                                contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                                //contentView.layer.cornerRadius = 25
+                                contentView.layer.masksToBounds = true
+                                //submitButton.addTarget(self, action: #selector(submitIsTapped), for: .touchUpInside)
+                                    
+                                return
+                            }
+                        }
+                    }
+                
+                }
+
+    @objc func handleTap() {
+        UIView.transition(with: self, duration: 0.5, options: .transitionCurlUp){
+            self.lessonText.backgroundColor = .gray
+            self.lessonText.text=self.backText
+            
+        }}
+}
