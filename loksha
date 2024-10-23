@@ -1,170 +1,18 @@
-import FirebaseFirestore
-
-func fetchLanguageModel(completion: @escaping (LanguageModel?) -> Void) {
+func fetchAllLanguageModels(completion: @escaping ([LanguageModel]?) -> Void) {
     let db = Firestore.firestore()
-
-    // Reference the specific document (uCzYXWNRBlPlPWS3oewF) in the "LanguageModel" collection
-    let languageDocRef = db.collection("LanguageModel").document("uCzYXWNRBlPlPWS3oewF")
+    let collectionRef = db.collection("LanguageModel")
     
-    languageDocRef.getDocument { (document, error) in
+    collectionRef.getDocuments { (querySnapshot, error) in
         if let error = error {
-            print("Error fetching language model: \(error)")
+            print("Error fetching language models: \(error)")
             completion(nil)
             return
         }
         
-        guard let document = document, document.exists, let data = document.data() else {
-            print("Document does not exist")
-            completion(nil)
-            return
-        }
+        let languageModels: [LanguageModel] = querySnapshot?.documents.compactMap { document in
+            try? document.data(as: LanguageModel.self)
+        } ?? []
         
-        do {
-            // Decode the main language model
-            let languageModel = try FirestoreDecoder().decode(LanguageModel.self, from: data)
-            
-            // Now fetch the levels (subcollection)
-            self.fetchLevels(for: languageDocRef) { levels in
-                if let levels = levels {
-                    var updatedModel = languageModel
-                    updatedModel.levels = levels
-                    completion(updatedModel)
-                } else {
-                    completion(nil)
-                }
-            }
-        } catch {
-            print("Error decoding document: \(error)")
-            completion(nil)
-        }
-    }
-}
-
-func fetchLevels(for languageDocRef: DocumentReference, completion: @escaping ([Level]?) -> Void) {
-    var levels: [Level] = []
-    
-    // Fetch the "levels" subcollection
-    languageDocRef.collection("levels").getDocuments { (snapshot, error) in
-        if let error = error {
-            print("Error fetching levels: \(error)")
-            completion(nil)
-            return
-        }
-        
-        guard let documents = snapshot?.documents else {
-            completion(nil)
-            return
-        }
-        
-        let group = DispatchGroup()
-        
-        for document in documents {
-            group.enter()
-            do {
-                // Decode each level
-                var level = try FirestoreDecoder().decode(Level.self, from: document.data())
-                
-                // Now fetch the lessons (subcollections) for this level
-                self.fetchLessons(for: document.reference, type: "vocabs") { vocabs in
-                    level.vocabs = vocabs ?? []
-                    
-                    self.fetchLessons(for: document.reference, type: "grammers") { grammers in
-                        level.grammers = grammers ?? []
-                        
-                        // Continue fetching other subcollections (e.g., writings, convos)...
-                        
-                        levels.append(level)
-                        group.leave()
-                    }
-                }
-            } catch {
-                print("Error decoding level: \(error)")
-                group.leave()
-            }
-        }
-        
-        group.notify(queue: .main) {
-            completion(levels)
-        }
-    }
-}
-
-func fetchLessons(for levelRef: DocumentReference, type: String, completion: @escaping ([Lesson]?) -> Void) {
-    var lessons: [Lesson] = []
-    
-    // Fetch the specific lesson type subcollection (e.g., "vocabs")
-    levelRef.collection(type).getDocuments { (snapshot, error) in
-        if let error = error {
-            print("Error fetching \(type): \(error)")
-            completion(nil)
-            return
-        }
-        
-        guard let documents = snapshot?.documents else {
-            completion(nil)
-            return
-        }
-        
-        let group = DispatchGroup()
-        
-        for document in documents {
-            group.enter()
-            do {
-                var lesson = try FirestoreDecoder().decode(Lesson.self, from: document.data())
-                
-                // Now fetch quizzes for each lesson
-                self.fetchQuizzes(for: document.reference) { quizzes in
-                    lesson.quizes = quizzes ?? []
-                    lessons.append(lesson)
-                    group.leave()
-                }
-            } catch {
-                print("Error decoding lesson: \(error)")
-                group.leave()
-            }
-        }
-        
-        group.notify(queue: .main) {
-            completion(lessons)
-        }
-    }
-}
-
-func fetchQuizzes(for lessonRef: DocumentReference, completion: @escaping ([Quiz]?) -> Void) {
-    var quizzes: [Quiz] = []
-    
-    // Fetch the quizzes subcollection for each lesson
-    lessonRef.collection("quizzes").getDocuments { (snapshot, error) in
-        if let error = error {
-            print("Error fetching quizzes: \(error)")
-            completion(nil)
-            return
-        }
-        
-        guard let documents = snapshot?.documents else {
-            completion(nil)
-            return
-        }
-        
-        for document in documents {
-            do {
-                let quiz = try FirestoreDecoder().decode(Quiz.self, from: document.data())
-                quizzes.append(quiz)
-            } catch {
-                print("Error decoding quiz: \(error)")
-            }
-        }
-        
-        completion(quizzes)
-    }
-}
-
-   fetchLanguageModel { languageModel in
-        if let model = languageModel {
-            print("Successfully fetched language model: \(model)")
-            // Now you can update your UI or pass this model to other parts of your app
-        } else {
-            print("Failed to fetch language model.")
-        }
+        completion(languageModels)
     }
 }
