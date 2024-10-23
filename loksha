@@ -1,40 +1,13 @@
-  fetchLanguageModel { languageModel, error in
-        if let error = error {
-            print("Failed to fetch language model: \(error.localizedDescription)")
-        } else if let languageModel = languageModel {
-            print("Language Model Name: \(languageModel.name)")
-            // Access levels, vocabs, grammar, etc.
-        }
-    }
-func fetchLanguageModel(completion: @escaping (LanguageModel?, Error?) -> Void) {
-    let db = Firestore.firestore()
-    
-    // Fetch the specific document from the collection
-    db.collection("YourCollectionName").document("YourDocumentID").getDocument { (document, error) in
-        if let error = error {
-            print("Error getting document: \(error)")
-            completion(nil, error)
-        } else {
-            guard let document = document, document.exists else {
-                print("Document does not exist")
-                completion(nil, nil)
-                return
-            }
-            // Access the 'languages' map and the 'french' field
-            guard let languages = document.data()?["languages"] as? [String: Any],
-                  let frenchData = languages["french"] as? [String: Any] else {
-                print("French language model not found")
-                completion(nil, nil)
-                return
-            }
+collectionRef.getDocuments { (querySnapshot, error) in
+    if let error = error {
+        print("Error getting documents: \(error)")
+    } else {
+        for document in querySnapshot!.documents {
             do {
-                // Decode the frenchData into a LanguageModel object
-                let jsonData = try JSONSerialization.data(withJSONObject: frenchData, options: [])
-                let languageModel = try JSONDecoder().decode(LanguageModel.self, from: jsonData)
-                completion(languageModel, nil)
+                let languageModel = try document.data(as: LanguageModel.self)
+                print("LanguageModel: \(languageModel)")
             } catch {
-                print("Error decoding LanguageModel: \(error)")
-                completion(nil, error)
+                print("Error decoding document: \(error)")
             }
         }
     }
