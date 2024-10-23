@@ -1,10 +1,9 @@
-  override func viewDidLoad() {
+   override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // Initialize the Supabase client
         client = SupabaseClient(supabaseURL: supabaseURL, supabaseKey: supabaseKey)
         
-        // Fetch data from Supabase
         fetchLanguageModels { result in
             switch result {
             case .success(let models):
@@ -16,21 +15,22 @@
         }
     }
 
+    // Fetch data from the "language_models" table
     func fetchLanguageModels(completion: @escaping (Result<[LanguageModel], Error>) -> Void) {
-        // Query the 'language_models' table
-        client
-            .from("language_models")
+        // Adjusted to handle the result with a closure
+        client.from("language_models")
             .select()
-            .execute { result in
+            .execute { result in // The trailing closure handles the result of the query
                 switch result {
                 case .success(let response):
                     do {
-                        // Decode the response data into LanguageModel array
-                        if let data = response.data {
-                            let models = try JSONDecoder().decode([LanguageModel].self, from: data)
-                            completion(.success(models))
+                        // Decode the response data into [LanguageModel]
+                        if let data = response.data as? [[String: Any]] {
+                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                            let decodedModels = try JSONDecoder().decode([LanguageModel].self, from: jsonData)
+                            completion(.success(decodedModels))
                         } else {
-                            completion(.failure(NSError(domain: "SupabaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data returned"])))
+                            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data found"])))
                         }
                     } catch {
                         completion(.failure(error))
