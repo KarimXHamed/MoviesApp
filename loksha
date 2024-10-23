@@ -1,16 +1,8 @@
-func fetchLanguageModelName(completion: @escaping (String?) -> Void) {
-    db.collection("LanguageModel").document("uCzYXWNRBlPlPWS3oewF") // Replace with your document ID
-        .getDocument { document, error in
-            if let document = document, document.exists {
-                // Safely unwrap the "name" field
-                if let name = document.get("name") as? String {
-                    completion(name)
-                } else {
-                    print("Name field does not exist or is not a String")
-                    completion(nil)
-                }
+   fetchLanguageModelName { name in
+            if let name = name {
+                print("Fetched name: \(name)")
+                // You can update your UI or perform other actions with the fetched name here
             } else {
-                print("Document does not exist or error: \(error?.localizedDescription ?? "Unknown error")")
-                completion(nil)
+                print("Failed to fetch name.")
             }
         }
