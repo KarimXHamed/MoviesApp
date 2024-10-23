@@ -1,20 +1,2 @@
-// Fetch data from the "language_models" table
-func fetchLanguageModels(completion: @escaping (Result<[LanguageModel], Error>) -> Void) {
-    // Adjusted to handle the result with a closure
-    client.from("language_models")
-        .select("*")
-        .execute { result in
-            switch result {
-            case .success(let response):
-                do {
-                    // Decode the response data into [LanguageModel]
-                    let models = try response.decode(to: [LanguageModel].self)
-                    completion(.success(models))
-                } catch {
-                    completion(.failure(error))
-                }
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
-}
+Error decoding document: typeMismatch(Swift.Dictionary<Swift.String, Any>, Swift.DecodingError.Context(codingPath: [CodingKeys(stringValue: "levels", intValue: nil), _JSONKey(stringValue: "Index 0", intValue: 0)], debugDescription: "Expected to decode Dictionary<String, Any> but found a string instead.", underlyingError: nil))
+Failed to fetch language model.
