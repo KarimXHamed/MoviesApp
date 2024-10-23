@@ -1,28 +1,19 @@
-struct LanguageModel:Codable {
-    let name:String
-    let levels:[Level]
-
-}
-struct Level:Codable{
-let name:String
-let vocabs:[lesson]
-let grammers:[lesson]
-let writings:[lesson]
-let convos:[lesson]
-    
-}
-struct lesson:Codable{
-    let name:String
-    let text:String
-    let quizes:[quiz]
-}
-
-struct quiz:Codable{
-    let myQuiz:[point]
-    let score:Int
-    
-}
-struct point:Codable{
-let question:String
-let answer:String
-}
+  func fetchLanguageModel(completion: @escaping (LanguageModel?) -> Void) {
+          db.collection("LanguageModel").document("uCzYXWNRBlPlPWS3oewF") // Replace with your document ID
+              .getDocument { document, error in
+                  if let document = document, document.exists {
+                      do {
+                          let jsonData = try JSONSerialization.data(withJSONObject: document.data() ?? [:], options: [])
+                          let languageModel = try JSONDecoder().decode(LanguageModel.self, from: jsonData)
+                          completion(languageModel)
+                      } catch {
+                          print("Error decoding document: \(error)")
+                          completion(nil)
+                      }
+                  } else {
+                      print("Document does not exist")
+                      completion(nil)
+                  }
+              }
+          print(LanguageModel.self)
+      }
