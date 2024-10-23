@@ -1,4 +1,4 @@
- override func viewDidLoad() {
+  override func viewDidLoad() {
         super.viewDidLoad()
         
         // Initialize the Supabase client
@@ -18,19 +18,26 @@
 
     func fetchLanguageModels(completion: @escaping (Result<[LanguageModel], Error>) -> Void) {
         // Query the 'language_models' table
-        client.from("language_models").select("*").execute { result in
-            switch result {
-            case .success(let response):
-                do {
-                    // Decode the response data into LanguageModel
-                    let models = try response.decode(to: [LanguageModel].self)
-                    completion(.success(models))
-                } catch {
+        client
+            .from("language_models")
+            .select()
+            .execute { result in
+                switch result {
+                case .success(let response):
+                    do {
+                        // Decode the response data into LanguageModel array
+                        if let data = response.data {
+                            let models = try JSONDecoder().decode([LanguageModel].self, from: data)
+                            completion(.success(models))
+                        } else {
+                            completion(.failure(NSError(domain: "SupabaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data returned"])))
+                        }
+                    } catch {
+                        completion(.failure(error))
+                    }
+                case .failure(let error):
                     completion(.failure(error))
                 }
-            case .failure(let error):
-                completion(.failure(error))
             }
-        }
     }
 }
