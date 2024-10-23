@@ -1,21 +1,25 @@
-    func fetchPoints(completion: @escaping ([point]?, Error?) -> Void) {
-        let db = Firestore.firestore()
-        
-        db.collection("LanguageModel").document("uCzYXWNRBlPlPWS3oewF") { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
+func fetchPoint(completion: @escaping (Point?, Error?) -> Void) {
+    let db = Firestore.firestore()
+    
+    // Fetch a specific document from the "LanguageModel" collection
+    db.collection("LanguageModel").document("uCzYXWNRBlPlPWS3oewF").getDocument { (document, error) in
+        if let error = error {
+            print("Error getting document: \(error)")
+            completion(nil, error)
+        } else {
+            guard let document = document, document.exists else {
+                print("Document does not exist")
+                completion(nil, nil)
+                return
+            }
+            do {
+                // Decode the document data into a Point object
+                let point = try document.data(as: Point.self)
+                completion(point, nil)
+            } catch {
+                print("Error decoding document: \(error)")
                 completion(nil, error)
-            } else {
-                var points: [point] = []
-                for document in querySnapshot!.documents {
-                    do {
-                        let point = try document.data(as: point.self)
-                        points.append(point)
-                    } catch {
-                        print("Error decoding document: \(error)")
-                    }
-                }
-                completion(points, nil)
             }
         }
     }
+}
