@@ -1,2 +1,82 @@
-Error decoding document: typeMismatch(Swift.Dictionary<Swift.String, Any>, Swift.DecodingError.Context(codingPath: [CodingKeys(stringValue: "levels", intValue: nil), _JSONKey(stringValue: "Index 0", intValue: 0)], debugDescription: "Expected to decode Dictionary<String, Any> but found a string instead.", underlyingError: nil))
-Failed to fetch language model.
+func fetchLanguageModel(completion: @escaping ([Level]?) -> Void) {
+    let db = Firestore.firestore()
+    
+    // Fetch data from the "LanguageModel" collection
+    db.collection("LanguageModel").getDocuments { (snapshot, error) in
+        if let error = error {
+            print("Error fetching documents: \(error)")
+            completion(nil)
+        } else {
+            guard let documents = snapshot?.documents else {
+                print("No documents found")
+                completion(nil)
+                return
+            }
+            
+            for document in documents {
+                if let levelsArray = self.parseLevels(from: document) {
+                    completion(levelsArray)
+                } else {
+                    completion(nil)
+                }
+            }
+        }
+    }
+}
+
+private func parseLevels(from document: QueryDocumentSnapshot) -> [Level]? {
+    let data = document.data()
+    
+    // Ensure that "levels" is an array of dictionaries
+    guard let levelsArray = data["levels"] as? [[String: Any]] else {
+        print("Error: 'levels' field is not an array of dictionaries")
+        return nil
+    }
+    
+    // Convert levelsArray into [Level] objects
+    let levels = levelsArray.compactMap { levelData -> Level? in
+        guard let name = levelData["name"] as? String,
+              let vocabsArray = levelData["vocabs"] as? [[String: Any]],
+              let grammersArray = levelData["grammers"] as? [[String: Any]],
+              let writingsArray = levelData["writings"] as? [[String: Any]],
+              let convosArray = levelData["convos"] as? [[String: Any]] else {
+            return nil
+        }
+
+        let vocabs = vocabsArray.compactMap { self.parseLesson(from: $0) }
+        let grammers = grammersArray.compactMap { self.parseLesson(from: $0) }
+        let writings = writingsArray.compactMap { self.parseLesson(from: $0) }
+        let convos = convosArray.compactMap { self.parseLesson(from: $0) }
+
+        return Level(name: name, vocabs: vocabs, grammers: grammers, writings: writings, convos: convos)
+    }
+
+    return levels
+}
+
+private func parseLesson(from lessonData: [String: Any]) -> lesson? {
+    guard let name = lessonData["name"] as? String,
+          let text = lessonData["text"] as? String,
+          let quizesArray = lessonData["quizes"] as? [[String: Any]] else {
+        return nil
+    }
+    
+    let quizes = quizesArray.compactMap { quizData -> quiz? in
+        guard let pointsArray = quizData["myQuiz"] as? [[String: Any]],
+              let score = quizData["score"] as? Int else {
+            return nil
+        }
+
+        let points = pointsArray.compactMap { pointData -> point? in
+            guard let question = pointData["question"] as? String,
+                  let answer = pointData["answer"] as? String else {
+                return nil
+            }
+            return point(question: question, answer: answer)
+        }
+
+        return quiz(myQuiz: points, score: score)
+    }
+    
+    return lesson(name: name, text: text, quizes: quizes)
+}
