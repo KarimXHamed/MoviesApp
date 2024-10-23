@@ -1,19 +1,16 @@
-  func fetchLanguageModel(completion: @escaping (LanguageModel?) -> Void) {
-          db.collection("LanguageModel").document("uCzYXWNRBlPlPWS3oewF") // Replace with your document ID
-              .getDocument { document, error in
-                  if let document = document, document.exists {
-                      do {
-                          let jsonData = try JSONSerialization.data(withJSONObject: document.data() ?? [:], options: [])
-                          let languageModel = try JSONDecoder().decode(LanguageModel.self, from: jsonData)
-                          completion(languageModel)
-                      } catch {
-                          print("Error decoding document: \(error)")
-                          completion(nil)
-                      }
-                  } else {
-                      print("Document does not exist")
-                      completion(nil)
-                  }
-              }
-          print(LanguageModel.self)
-      }
+func fetchLanguageModelName(completion: @escaping (String?) -> Void) {
+    db.collection("LanguageModel").document("uCzYXWNRBlPlPWS3oewF") // Replace with your document ID
+        .getDocument { document, error in
+            if let document = document, document.exists {
+                // Safely unwrap the "name" field
+                if let name = document.get("name") as? String {
+                    completion(name)
+                } else {
+                    print("Name field does not exist or is not a String")
+                    completion(nil)
+                }
+            } else {
+                print("Document does not exist or error: \(error?.localizedDescription ?? "Unknown error")")
+                completion(nil)
+            }
+        }
