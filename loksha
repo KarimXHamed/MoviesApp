@@ -158,3 +158,13 @@ func fetchQuizzes(for lessonRef: DocumentReference, completion: @escaping ([Quiz
         completion(quizzes)
     }
 }
+
+   fetchLanguageModel { languageModel in
+        if let model = languageModel {
+            print("Successfully fetched language model: \(model)")
+            // Now you can update your UI or pass this model to other parts of your app
+        } else {
+            print("Failed to fetch language model.")
+        }
+    }
+}
