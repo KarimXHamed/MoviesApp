@@ -1,14 +1,28 @@
-collectionRef.getDocuments { (querySnapshot, error) in
-    if let error = error {
-        print("Error getting documents: \(error)")
-    } else {
-        for document in querySnapshot!.documents {
-            do {
-                let languageModel = try document.data(as: LanguageModel.self)
-                print("LanguageModel: \(languageModel)")
-            } catch {
-                print("Error decoding document: \(error)")
-            }
-        }
-    }
+struct LanguageModel:Codable {
+    let name:String
+    let levels:[Level]
+
+}
+struct Level:Codable{
+let name:String
+let vocabs:[lesson]
+let grammers:[lesson]
+let writings:[lesson]
+let convos:[lesson]
+    
+}
+struct lesson:Codable{
+    let name:String
+    let text:String
+    let quizes:[quiz]
+}
+
+struct quiz:Codable{
+    let myQuiz:[point]
+    let score:Int
+    
+}
+struct point:Codable{
+let question:String
+let answer:String
 }
