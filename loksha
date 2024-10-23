@@ -1,28 +1,160 @@
-struct LanguageModel:Codable {
-    let name:String
-    let levels:[Level]
+import FirebaseFirestore
 
-}
-struct Level:Codable{
-let name:String
-let vocabs:[lesson]
-let grammers:[lesson]
-let writings:[lesson]
-let convos:[lesson]
+func fetchLanguageModel(completion: @escaping (LanguageModel?) -> Void) {
+    let db = Firestore.firestore()
+
+    // Reference the specific document (uCzYXWNRBlPlPWS3oewF) in the "LanguageModel" collection
+    let languageDocRef = db.collection("LanguageModel").document("uCzYXWNRBlPlPWS3oewF")
     
-}
-struct lesson:Codable{
-    let name:String
-    let text:String
-    let quizes:[quiz]
+    languageDocRef.getDocument { (document, error) in
+        if let error = error {
+            print("Error fetching language model: \(error)")
+            completion(nil)
+            return
+        }
+        
+        guard let document = document, document.exists, let data = document.data() else {
+            print("Document does not exist")
+            completion(nil)
+            return
+        }
+        
+        do {
+            // Decode the main language model
+            let languageModel = try FirestoreDecoder().decode(LanguageModel.self, from: data)
+            
+            // Now fetch the levels (subcollection)
+            self.fetchLevels(for: languageDocRef) { levels in
+                if let levels = levels {
+                    var updatedModel = languageModel
+                    updatedModel.levels = levels
+                    completion(updatedModel)
+                } else {
+                    completion(nil)
+                }
+            }
+        } catch {
+            print("Error decoding document: \(error)")
+            completion(nil)
+        }
+    }
 }
 
-struct quiz:Codable{
-    let myQuiz:[point]
-    let score:Int
+func fetchLevels(for languageDocRef: DocumentReference, completion: @escaping ([Level]?) -> Void) {
+    var levels: [Level] = []
     
+    // Fetch the "levels" subcollection
+    languageDocRef.collection("levels").getDocuments { (snapshot, error) in
+        if let error = error {
+            print("Error fetching levels: \(error)")
+            completion(nil)
+            return
+        }
+        
+        guard let documents = snapshot?.documents else {
+            completion(nil)
+            return
+        }
+        
+        let group = DispatchGroup()
+        
+        for document in documents {
+            group.enter()
+            do {
+                // Decode each level
+                var level = try FirestoreDecoder().decode(Level.self, from: document.data())
+                
+                // Now fetch the lessons (subcollections) for this level
+                self.fetchLessons(for: document.reference, type: "vocabs") { vocabs in
+                    level.vocabs = vocabs ?? []
+                    
+                    self.fetchLessons(for: document.reference, type: "grammers") { grammers in
+                        level.grammers = grammers ?? []
+                        
+                        // Continue fetching other subcollections (e.g., writings, convos)...
+                        
+                        levels.append(level)
+                        group.leave()
+                    }
+                }
+            } catch {
+                print("Error decoding level: \(error)")
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) {
+            completion(levels)
+        }
+    }
 }
-struct point:Codable{
-let question:String
-let answer:String
+
+func fetchLessons(for levelRef: DocumentReference, type: String, completion: @escaping ([Lesson]?) -> Void) {
+    var lessons: [Lesson] = []
+    
+    // Fetch the specific lesson type subcollection (e.g., "vocabs")
+    levelRef.collection(type).getDocuments { (snapshot, error) in
+        if let error = error {
+            print("Error fetching \(type): \(error)")
+            completion(nil)
+            return
+        }
+        
+        guard let documents = snapshot?.documents else {
+            completion(nil)
+            return
+        }
+        
+        let group = DispatchGroup()
+        
+        for document in documents {
+            group.enter()
+            do {
+                var lesson = try FirestoreDecoder().decode(Lesson.self, from: document.data())
+                
+                // Now fetch quizzes for each lesson
+                self.fetchQuizzes(for: document.reference) { quizzes in
+                    lesson.quizes = quizzes ?? []
+                    lessons.append(lesson)
+                    group.leave()
+                }
+            } catch {
+                print("Error decoding lesson: \(error)")
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) {
+            completion(lessons)
+        }
+    }
+}
+
+func fetchQuizzes(for lessonRef: DocumentReference, completion: @escaping ([Quiz]?) -> Void) {
+    var quizzes: [Quiz] = []
+    
+    // Fetch the quizzes subcollection for each lesson
+    lessonRef.collection("quizzes").getDocuments { (snapshot, error) in
+        if let error = error {
+            print("Error fetching quizzes: \(error)")
+            completion(nil)
+            return
+        }
+        
+        guard let documents = snapshot?.documents else {
+            completion(nil)
+            return
+        }
+        
+        for document in documents {
+            do {
+                let quiz = try FirestoreDecoder().decode(Quiz.self, from: document.data())
+                quizzes.append(quiz)
+            } catch {
+                print("Error decoding quiz: \(error)")
+            }
+        }
+        
+        completion(quizzes)
+    }
 }
