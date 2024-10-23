@@ -1,8 +1,31 @@
-   fetchLanguageModelName { name in
-            if let name = name {
-                print("Fetched name: \(name)")
-                // You can update your UI or perform other actions with the fetched name here
-            } else {
-                print("Failed to fetch name.")
+func fetchPoints(completion: @escaping ([Point]?, Error?) -> Void) {
+    let db = Firestore.firestore()
+    
+    db.collection("Points").getDocuments { (querySnapshot, error) in
+        if let error = error {
+            print("Error getting documents: \(error)")
+            completion(nil, error)
+        } else {
+            var points: [Point] = []
+            for document in querySnapshot!.documents {
+                do {
+                    let point = try document.data(as: Point.self)
+                    points.append(point)
+                } catch {
+                    print("Error decoding document: \(error)")
+                }
+            }
+            completion(points, nil)
+        }
+    }
+}
+
+    fetchPoints { points, error in
+        if let error = error {
+            print("Failed to fetch points: \(error.localizedDescription)")
+        } else if let points = points {
+            for point in points {
+                print("Question: \(point.question), Answer: \(point.answer)")
             }
         }
+    }
