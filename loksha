@@ -1,33 +1,30 @@
- override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Call the fetchLanguageModel function here
-        fetchLanguageModel { languageModel in
-            if let model = languageModel {
-                // Successfully fetched the language model
-                print("Successfully fetched language model: \(model)")
-                
-                // You can update the UI, store the model, or perform other actions here
-                // For example, you can store it in a property:
-                self.displayLanguageModel(model)
-                
-            } else {
-                // Failed to fetch the language model
-                print("Failed to fetch language model.")
-            }
-        }
-    }
+struct LanguageModel:Encodable {
+   
+    let name:String
+    var levels:[Level]=[]
     
-    // Function to update the UI or handle the language model data
-    func displayLanguageModel(_ model: LanguageModel) {
-        // For now, let's just print the model to check if it's correctly fetched
-        print("Language Model Name: \(model.name)")
-        
-        for level in model.levels {
-            print("Level Name: \(level.name)")
-            for vocab in level.vocabs {
-                print("Vocab Name: \(vocab.name), Text: \(vocab.text)")
-            }
-        }
-    }
+    
+}
+struct Level:Encodable{
+let name:String
+    var vocabs:[lesson]=[]
+    var grammers:[lesson]=[]
+    var writings:[lesson]=[]
+    var convos:[lesson]=[]
+    
+}
+struct lesson:Encodable{
+    let name:String
+    let text:String
+    var quizes:[quiz]=[]
+}
+
+struct quiz:Encodable{
+    var myQuiz:[point]=[]
+    let score:Int
+    
+}
+struct point:Encodable{
+let question:String
+let answer:String
 }
