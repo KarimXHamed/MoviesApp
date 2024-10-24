@@ -44,3 +44,4 @@ func fetchLanguageModel() {
             print("Error encoding language model: \(error)")
         }
     }
+unexpected service error: build aborted due to an internal error: unable to write manifest to '/Users/karimhamed/Library/Developer/Xcode/DerivedData/teacherify-gqmdhqlcezdxvtefuxelybxprvnu/Build/Intermediates.noindex/XCBuildData/1ae52e920bcaa457d6d2b7bc95a11c69.xcbuilddata/manifest.json': fwrite(): No space left on device (28)
