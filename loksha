@@ -1,30 +1,14 @@
-struct LanguageModel:Encodable {
-   
-    let name:String
-    var levels:[Level]=[]
-    
-    
-}
-struct Level:Encodable{
-let name:String
-    var vocabs:[lesson]=[]
-    var grammers:[lesson]=[]
-    var writings:[lesson]=[]
-    var convos:[lesson]=[]
-    
-}
-struct lesson:Encodable{
-    let name:String
-    let text:String
-    var quizes:[quiz]=[]
-}
+import FirebaseFirestore
 
-struct quiz:Encodable{
-    var myQuiz:[point]=[]
-    let score:Int
-    
-}
-struct point:Encodable{
-let question:String
-let answer:String
+func storeLanguageModel(languageModel: LanguageModel) {
+    let db = Firestore.firestore()
+    let docRef = db.collection("languageModels").document("myLanguageModel")
+
+    do {
+        let data = try JSONEncoder().encode(languageModel)
+        try docRef.setData(data, merge: true)
+        print("Language model stored successfully!")
+    } catch {
+        print("Error storing language model: \(error)")
+    }
 }
