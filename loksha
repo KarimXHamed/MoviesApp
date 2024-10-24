@@ -8,7 +8,8 @@ func fetchLanguageModel() {
         } else if let document = document,   
  let data = document.data() {
             do {
-                let languageModel = try JSONDecoder().decode(LanguageModel.self, from: data)
+                let jsonData = try JSONSerialization.data(with: data, options: [])
+                let languageModel = try JSONDecoder().decode(LanguageModel.self, from: jsonData)
                 print("Language model fetched successfully: \(languageModel)")
             } catch {
                 print("Error decoding language model: \(error)")
