@@ -1,14 +1,17 @@
-import FirebaseFirestore
-
 func storeLanguageModel(languageModel: LanguageModel) {
     let db = Firestore.firestore()
     let docRef = db.collection("languageModels").document("myLanguageModel")
 
     do {
         let data = try JSONEncoder().encode(languageModel)
-        try docRef.setData(data, merge: true)
-        print("Language model stored successfully!")
+        let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String:Any]
+        if let json = json {
+            try docRef.setData(json, merge: true)
+            print("Language model stored successfully!")
+        } else {
+            print("Error converting data to JSON")
+        }
     } catch {
-        print("Error storing language model: \(error)")
+        print("Error encoding language model: \(error)")
     }
 }
